@@ -1,0 +1,4 @@
+export function add(x, y) {
+    return x + y;
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYWRkLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vc3JjL2FkZC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDQSxNQUFNLFVBQVUsR0FBRyxDQUFFLENBQVMsRUFBRSxDQUFTO0lBQ3ZDLE9BQU8sQ0FBQyxHQUFHLENBQUMsQ0FBQTtBQUNkLENBQUMifQ==
