@@ -1,11 +1,11 @@
 {
-  "name": "nrts",
+  "name": "borp",
   "version": "0.1.0",
   "type": "module",
   "description": "node:test wrapper with TypeScript support",
-  "main": "nrts.js",
+  "main": "borp.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard | snazzy"
   },
   "keywords": [],
   "author": "Matteo Collina <hello@matteocollina.com>",

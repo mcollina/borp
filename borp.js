@@ -3,14 +3,12 @@
 import { parseArgs } from 'node:util'
 import { tap, spec } from 'node:test/reporters'
 import { run } from 'node:test'
-import path from 'node:path'
 import { glob } from 'glob'
-import { createRequire } from 'node:module'
 
 const tsimpImport = import.meta.resolve('tsimp/import')
 
-process.env.NODE_OPTIONS ||= '';
-process.env.NODE_OPTIONS += `--import=${tsimpImport}`;
+process.env.NODE_OPTIONS ||= ''
+process.env.NODE_OPTIONS += `--import=${tsimpImport}`
 
 let reporter
 if (process.stdout.isTTY) {
@@ -20,7 +18,7 @@ if (process.stdout.isTTY) {
 }
 
 const args = parseArgs({
-  args: process.argv.slice(2), 
+  args: process.argv.slice(2),
   options: {
     only: { type: 'boolean', short: 'o' },
     watch: { type: 'boolean', short: 'w' },
@@ -50,4 +48,4 @@ const config = {
 
 run(config)
   .compose(reporter)
-  .pipe(process.stdout);
+  .pipe(process.stdout)
