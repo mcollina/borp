@@ -17,7 +17,8 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
-    "glob": "^10.3.10",
-    "tsimp": "^2.0.5"
+    "execa": "^8.0.1",
+    "find-up": "^7.0.0",
+    "glob": "^10.3.10"
   }
 }
