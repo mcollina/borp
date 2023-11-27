@@ -2,7 +2,11 @@
 
 import { parseArgs } from 'node:util'
 import { tap, spec } from 'node:test/reporters'
+import { mkdtemp, rm } from 'node:fs/promises'
+import { finished } from 'node:stream/promises'
+import { join } from 'node:path'
 import runWithTypeScript from './lib/run.js'
+import { Report } from 'c8'
 
 let reporter
 if (process.stdout.isTTY) {
@@ -18,13 +22,21 @@ const args = parseArgs({
     only: { type: 'boolean', short: 'o' },
     watch: { type: 'boolean', short: 'w' },
     pattern: { type: 'string', short: 'p' },
-    concurrency: { type: 'string', short: 'c' }
+    concurrency: { type: 'string', short: 'c' },
+    coverage: { type: 'boolean', short: 'C' }
   },
   allowPositionals: true
 })
 
 if (args.values.concurrency) {
   args.values.concurrency = parseInt(args.values.concurrency)
+}
+
+
+let covDir
+if (args.values.coverage) {
+  covDir = await mkdtemp(join(process.cwd(), 'coverage-'))
+  process.env.NODE_V8_COVERAGE = covDir
 }
 
 const config = {
@@ -34,6 +46,24 @@ const config = {
   cwd: process.cwd()
 }
 
-;(await runWithTypeScript(config))
-  .compose(reporter)
+const stream = await runWithTypeScript(config)
+
+stream.compose(reporter)
   .pipe(process.stdout)
+
+await finished(stream)
+
+if (covDir) {
+  const report = Report({
+    reporter: ['text'],
+    tempDirectory: covDir
+  })
+
+  try {
+    await report.run()
+  } catch (err) {
+    console.error(err)
+  } finally {
+    await rm(covDir, { recursive: true })
+  }
+}
