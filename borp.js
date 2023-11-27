@@ -23,7 +23,8 @@ const args = parseArgs({
     watch: { type: 'boolean', short: 'w' },
     pattern: { type: 'string', short: 'p' },
     concurrency: { type: 'string', short: 'c' },
-    coverage: { type: 'boolean', short: 'C' }
+    coverage: { type: 'boolean', short: 'C' },
+    'coverage-exclude': { type: 'string', short: 'X' }
   },
   allowPositionals: true
 })
@@ -31,7 +32,6 @@ const args = parseArgs({
 if (args.values.concurrency) {
   args.values.concurrency = parseInt(args.values.concurrency)
 }
-
 
 let covDir
 if (args.values.coverage) {
@@ -53,12 +53,19 @@ stream.compose(reporter).pipe(process.stdout)
 await finished(stream)
 
 if (covDir) {
-  const report = Report({
-    reporter: ['text'],
-    tempDirectory: covDir
-  })
-
   try {
+    let exclude = [
+      ...(args.values['coverage-exclude'] || '').split(',')
+    ].filter(Boolean)
+    if (exclude.length === 0) {
+      exclude = undefined
+    }
+    const report = Report({
+      reporter: ['text'],
+      tempDirectory: covDir,
+      exclude
+    })
+
     await report.run()
   } catch (err) {
     console.error(err)
