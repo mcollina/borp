@@ -1,5 +1,5 @@
 import { test } from 'node:test'
-import { match } from 'node:assert'
+import { match, doesNotMatch } from 'node:assert'
 import { execa } from 'execa'
 import { join } from 'desm'
 
@@ -29,6 +29,7 @@ test('coverage excludes', async () => {
 
   match(res.stdout, /% Stmts/)
   match(res.stdout, /All files/)
+  doesNotMatch(res.stdout, /add\.ts/)
   // The test files are shown
   match(res.stdout, /add\.test\.ts/)
   match(res.stdout, /add2\.test\.ts/)
