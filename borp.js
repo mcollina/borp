@@ -4,7 +4,7 @@ import { parseArgs } from 'node:util'
 import { tap, spec } from 'node:test/reporters'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { finished } from 'node:stream/promises'
-import { join } from 'node:path'
+import { join, relative } from 'node:path'
 import runWithTypeScript from './lib/run.js'
 import { Report } from 'c8'
 
@@ -54,11 +54,13 @@ await finished(stream)
 
 if (covDir) {
   try {
-    let exclude = [
-      ...(args.values['coverage-exclude'] || '').split(',')
-    ].filter(Boolean)
+    let exclude = (args.values['coverage-exclude'] || '').split(',').filter(Boolean)
+
     if (exclude.length === 0) {
       exclude = undefined
+    } else if (config.prefix) {
+      const localPrefix = relative(process.cwd(), config.prefix)
+      exclude = exclude.map((file) => join(localPrefix, file))
     }
     const report = Report({
       reporter: ['text'],

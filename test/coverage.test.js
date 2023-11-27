@@ -17,3 +17,19 @@ test('coverage', async () => {
   match(res.stdout, /All files/)
   match(res.stdout, /add\.ts/)
 })
+
+test('coverage excludes', async () => {
+  const res = await execa('node', [
+    borp,
+    '--coverage',
+    '--coverage-exclude=src'
+  ], {
+    cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
+  })
+
+  match(res.stdout, /% Stmts/)
+  match(res.stdout, /All files/)
+  // The test files are shown
+  match(res.stdout, /add\.test\.ts/)
+  match(res.stdout, /add2\.test\.ts/)
+})
