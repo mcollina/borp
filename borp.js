@@ -48,8 +48,7 @@ const config = {
 
 const stream = await runWithTypeScript(config)
 
-stream.compose(reporter)
-  .pipe(process.stdout)
+stream.compose(reporter).pipe(process.stdout)
 
 await finished(stream)
 
