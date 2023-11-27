@@ -6,7 +6,8 @@ import runWithTypeScript from './lib/run.js'
 
 let reporter
 if (process.stdout.isTTY) {
-  reporter = spec()
+  /* eslint new-cap: "off" */
+  reporter = new spec()
 } else {
   reporter = tap
 }
