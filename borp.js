@@ -46,14 +46,14 @@ const config = {
   cwd: process.cwd()
 }
 
-const stream = await runWithTypeScript(config)
+try {
+  const stream = await runWithTypeScript(config)
 
-stream.compose(reporter).pipe(process.stdout)
+  stream.compose(reporter).pipe(process.stdout)
 
-await finished(stream)
+  await finished(stream)
 
-if (covDir) {
-  try {
+  if (covDir) {
     let exclude = (args.values['coverage-exclude'] || '').split(',').filter(Boolean)
 
     if (exclude.length === 0) {
@@ -69,9 +69,11 @@ if (covDir) {
     })
 
     await report.run()
-  } catch (err) {
-    console.error(err)
-  } finally {
+  }
+} catch (err) {
+  console.error(err)
+} finally {
+  if (covDir) {
     await rm(covDir, { recursive: true })
   }
 }
