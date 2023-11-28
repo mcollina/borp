@@ -1,0 +1,107 @@
+import { test } from 'node:test'
+import { tspl } from '@matteo.collina/tspl'
+import runWithTypeScript from '../lib/run.js'
+import { join } from 'desm'
+import { mkdtemp, cp, writeFile, rm } from 'node:fs/promises'
+import path from 'node:path'
+import { once } from 'node:events'
+
+test('watch', async (t) => {
+  const { strictEqual, completed, match } = tspl(t, { plan: 3 })
+
+  const dir = path.resolve(await mkdtemp('.test-watch'))
+  await cp(join(import.meta.url, '..', 'fixtures', 'ts-esm'), dir, {
+    recursive: true
+  })
+
+  const controller = new AbortController()
+  t.after(async () => {
+    controller.abort()
+    await rm(dir, { recursive: true })
+  })
+
+  const config = {
+    files: [],
+    cwd: dir,
+    signal: controller.signal,
+    watch: true
+  }
+
+  const stream = await runWithTypeScript(config)
+
+  const fn = (test) => {
+    if (test.type === 'test:fail') {
+      strictEqual(test.data.name, 'add')
+      stream.removeListener('data', fn)
+    }
+  }
+  stream.on('data', fn)
+
+  const [test] = await once(stream, 'data')
+  strictEqual(test.type, 'test:diagnostic')
+  match(test.data.message, /TypeScript compilation complete \(\d+ms\)/)
+
+  const toWrite = `
+import { test } from 'node:test'
+import { add } from '../src/add.js'
+import { strictEqual } from 'node:assert'
+
+test('add', () => {
+  strictEqual(add(1, 2), 4)
+})
+`
+  const file = path.join(dir, 'test', 'add.test.ts')
+  await writeFile(file, toWrite)
+
+  await completed
+})
+
+test('watch file syntax error', async (t) => {
+  const { strictEqual, completed, match } = tspl(t, { plan: 3 })
+
+  const dir = path.resolve(await mkdtemp('.test-watch'))
+  await cp(join(import.meta.url, '..', 'fixtures', 'ts-esm'), dir, {
+    recursive: true
+  })
+
+  const controller = new AbortController()
+  t.after(async () => {
+    controller.abort()
+    await rm(dir, { recursive: true })
+  })
+
+  const config = {
+    files: [],
+    cwd: dir,
+    signal: controller.signal,
+    watch: true
+  }
+
+  const stream = await runWithTypeScript(config)
+
+  const fn = (test) => {
+    if (test.type === 'test:fail') {
+      match(test.data.name, /add\.test\.ts/)
+      stream.removeListener('data', fn)
+    }
+  }
+  stream.on('data', fn)
+
+  const [test] = await once(stream, 'data')
+  strictEqual(test.type, 'test:diagnostic')
+  match(test.data.message, /TypeScript compilation complete \(\d+ms\)/)
+
+  const toWrite = `
+import { test } from 'node:test'
+import { add } from '../src/add.js'
+import { strictEqual } from 'node:assert'
+
+test('add', () => {
+  strictEqual(add(1, 2), 3
+})
+`
+  const file = path.join(dir, 'test', 'add.test.ts')
+  await writeFile(file, toWrite)
+
+  await completed
+})

@@ -25,6 +25,7 @@ const args = parseArgs({
     pattern: { type: 'string', short: 'p' },
     concurrency: { type: 'string', short: 'c' },
     coverage: { type: 'boolean', short: 'C' },
+    timeout: { type: 'string', short: 't', default: '30000' },
     'coverage-exclude': { type: 'string', short: 'X' }
   },
   allowPositionals: true
@@ -32,6 +33,10 @@ const args = parseArgs({
 
 if (args.values.concurrency) {
   args.values.concurrency = parseInt(args.values.concurrency)
+}
+
+if (args.values.timeout) {
+  args.values.timeout = parseInt(args.values.timeout)
 }
 
 let covDir
