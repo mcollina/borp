@@ -9,6 +9,7 @@ import runWithTypeScript from './lib/run.js'
 import { Report } from 'c8'
 
 let reporter
+/* c8 ignore next 4 */
 if (process.stdout.isTTY) {
   /* eslint new-cap: "off" */
   reporter = new spec()
@@ -70,6 +71,7 @@ try {
 
     await report.run()
   }
+  /* c8 ignore next 3 */
 } catch (err) {
   console.error(err)
 } finally {
