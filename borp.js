@@ -5,6 +5,7 @@ import { tap, spec } from 'node:test/reporters'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { finished } from 'node:stream/promises'
 import { join, relative } from 'node:path'
+import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
 import { Report } from 'c8'
 
@@ -55,6 +56,10 @@ const config = {
 try {
   const stream = await runWithTypeScript(config)
 
+  stream.on('test:fail', () => {
+    process.exitCode = 1
+  })
+
   stream.compose(reporter).pipe(process.stdout)
 
   await finished(stream)
@@ -66,8 +71,9 @@ try {
       exclude = undefined
     } else if (config.prefix) {
       const localPrefix = relative(process.cwd(), config.prefix)
-      exclude = exclude.map((file) => join(localPrefix, file))
+      exclude = exclude.map((file) => posix.join(localPrefix, file))
     }
+    console.log('>> Excluding from coverage:', exclude)
     const report = Report({
       reporter: ['text'],
       tempDirectory: covDir,
