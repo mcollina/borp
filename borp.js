@@ -55,6 +55,10 @@ const config = {
 try {
   const stream = await runWithTypeScript(config)
 
+  stream.on('test:fail', () => {
+    process.exitCode = 1
+  })
+
   stream.compose(reporter).pipe(process.stdout)
 
   await finished(stream)
