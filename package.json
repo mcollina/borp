@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rm -rf fixtures/*/dist .test-* coverage-*",
     "lint": "standard | snazzy",
-    "unit": "node borp.js --concurrency=1 --coverage --coverage-exclude 'fixtures/**/*,test/**/*'",
+    "unit": "node borp.js --concurrency=1 --coverage --coverage-exclude \"fixtures/**/*,test/**/*\"",
     "test": "npm run clean ; npm run lint && npm run unit"
   },
   "keywords": [],
