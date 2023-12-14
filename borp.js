@@ -73,6 +73,7 @@ try {
       const localPrefix = relative(process.cwd(), config.prefix)
       exclude = exclude.map((file) => posix.join(localPrefix, file))
     }
+    console.log('>> Excluding from coverage:', exclude)
     const report = Report({
       reporter: ['text'],
       tempDirectory: covDir,
