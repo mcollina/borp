@@ -45,3 +45,75 @@ test('ts-cjs', async (t) => {
 
   await completed
 })
+
+test('ts-esm with named failes', async (t) => {
+  const { strictEqual, completed, match } = tspl(t, { plan: 3 })
+  const config = {
+    files: ['test/add.test.ts'],
+    cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
+  }
+
+  const stream = await runWithTypeScript(config)
+
+  const names = new Set(['add'])
+
+  stream.once('data', (test) => {
+    strictEqual(test.type, 'test:diagnostic')
+    match(test.data.message, /TypeScript compilation complete \(\d+ms\)/)
+  })
+
+  stream.on('test:pass', (test) => {
+    strictEqual(names.has(test.name), true)
+    names.delete(test.name)
+  })
+
+  await completed
+})
+
+test('pattern', async (t) => {
+  const { strictEqual, completed, match } = tspl(t, { plan: 3 })
+  const config = {
+    files: [],
+    pattern: 'test/*2.test.ts',
+    cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
+  }
+
+  const stream = await runWithTypeScript(config)
+
+  const names = new Set(['add2'])
+
+  stream.once('data', (test) => {
+    strictEqual(test.type, 'test:diagnostic')
+    match(test.data.message, /TypeScript compilation complete \(\d+ms\)/)
+  })
+
+  stream.on('test:pass', (test) => {
+    strictEqual(names.has(test.name), true)
+    names.delete(test.name)
+  })
+
+  await completed
+})
+
+test('no files', async (t) => {
+  const { strictEqual, completed, match } = tspl(t, { plan: 4 })
+  const config = {
+    cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
+  }
+
+  const stream = await runWithTypeScript(config)
+
+  const names = new Set(['add', 'add2'])
+
+  stream.once('data', (test) => {
+    strictEqual(test.type, 'test:diagnostic')
+    match(test.data.message, /TypeScript compilation complete \(\d+ms\)/)
+  })
+
+  stream.on('test:pass', (test) => {
+    strictEqual(names.has(test.name), true)
+    names.delete(test.name)
+  })
+
+  await completed
+})
