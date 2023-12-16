@@ -43,7 +43,7 @@ if (args.values.timeout) {
 
 let covDir
 if (args.values.coverage) {
-  covDir = await mkdtemp(join(process.cwd(), 'coverage-'))
+  covDir = await mkdtemp(join(os.tmpdir(), 'coverage-'))
   process.env.NODE_V8_COVERAGE = covDir
 }
 
@@ -87,6 +87,6 @@ try {
   console.error(err)
 } finally {
   if (covDir) {
-    await rm(covDir, { recursive: true })
+    await rm(covDir, { recursive: true, maxRetries: 10, retryDelay: 100 })
   }
 }
