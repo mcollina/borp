@@ -35,6 +35,7 @@ const args = parseArgs({
   allowPositionals: true
 })
 
+/* c8 ignore next 4 */
 if (args.values.help) {
   console.log(await readFile(new URL('./README.md', import.meta.url), 'utf8'))
   process.exit(0)
