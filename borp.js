@@ -8,6 +8,7 @@ import { join, relative } from 'node:path'
 import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
 import { Report } from 'c8'
+import os from 'node:os'
 
 let reporter
 /* c8 ignore next 4 */
@@ -24,7 +25,7 @@ const args = parseArgs({
     only: { type: 'boolean', short: 'o' },
     watch: { type: 'boolean', short: 'w' },
     pattern: { type: 'string', short: 'p' },
-    concurrency: { type: 'string', short: 'c' },
+    concurrency: { type: 'string', short: 'c', default: os.availableParallelism() - 1 + '' },
     coverage: { type: 'boolean', short: 'C' },
     timeout: { type: 'string', short: 't', default: '30000' },
     'coverage-exclude': { type: 'string', short: 'X' }
