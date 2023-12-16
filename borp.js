@@ -2,14 +2,13 @@
 
 import { parseArgs } from 'node:util'
 import { tap, spec } from 'node:test/reporters'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, rm, readFile } from 'node:fs/promises'
 import { finished } from 'node:stream/promises'
 import { join, relative } from 'node:path'
 import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
 import { Report } from 'c8'
 import os from 'node:os'
-import { readFile } from 'node:fs/promises'
 
 let reporter
 /* c8 ignore next 4 */
