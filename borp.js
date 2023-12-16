@@ -87,6 +87,9 @@ try {
   console.error(err)
 } finally {
   if (covDir) {
-    await rm(covDir, { recursive: true, maxRetries: 10, retryDelay: 100 })
+    try {
+      await rm(covDir, { recursive: true, maxRetries: 10, retryDelay: 100 })
+      /* c8 ignore next 2 */
+    } catch {}
   }
 }
