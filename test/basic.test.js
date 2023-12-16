@@ -117,3 +117,27 @@ test('no files', async (t) => {
 
   await completed
 })
+
+test('src-to-dist', async (t) => {
+  const { strictEqual, completed, match } = tspl(t, { plan: 4 })
+  const config = {
+    files: [],
+    cwd: join(import.meta.url, '..', 'fixtures', 'src-to-dist')
+  }
+
+  const stream = await runWithTypeScript(config)
+
+  const names = new Set(['add', 'add2'])
+
+  stream.once('data', (test) => {
+    strictEqual(test.type, 'test:diagnostic')
+    match(test.data.message, /TypeScript compilation complete \(\d+ms\)/)
+  })
+
+  stream.on('test:pass', (test) => {
+    strictEqual(names.has(test.name), true)
+    names.delete(test.name)
+  })
+
+  await completed
+})
