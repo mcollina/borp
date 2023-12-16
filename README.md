@@ -21,7 +21,18 @@ Borp will autumatically run all tests files matching `*.test.{js|ts}`.
 
 ### Example project setup
 
-As an example, consider having a `src/add.ts` file  
+```
+.
+├── src
+│   ├── lib
+│   │   └── add.ts
+│   └── test
+│       └── add.test.ts
+└── tsconfig.json
+
+```
+
+As an example, consider having a `src/lib/add.ts` file  
 
 ```typescript
 export function add (x: number, y: number): number {
@@ -29,11 +40,11 @@ export function add (x: number, y: number): number {
 }
 ```
 
-and a `test/add.test.ts` file:
+and a `src/test/add.test.ts` file:
 
 ```typescript
 import { test } from 'node:test'
-import { add } from '../src/add.js'
+import { add } from '../lib/add.js'
 import { strictEqual } from 'node:assert'
 
 test('add', () => {
@@ -41,7 +52,7 @@ test('add', () => {
 })
 ```
 
-and the following `tsconfig`:
+and the following `tsconfig.json`:
 
 ```json
 {
@@ -79,6 +90,8 @@ Note the use of `incremental: true`, which speed up compilation massively.
 * `--watch` or `-w`, re-run tests on changes
 * `--timeout` or `-t`, timeouts the tests after a given time; default is 30000 ms
 * `--coverage-exclude` or `-X`, a list of comma-separated patterns to exclude from the coverage report. All tests files are ignored by default.
+* `--ignore` or `-i`, ignore a glob pattern, and not look for tests there
+* `--pattern` or `-p`, run tests matching the given glob pattern
 
 ## License
 

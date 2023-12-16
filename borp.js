@@ -9,6 +9,7 @@ import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
 import { Report } from 'c8'
 import os from 'node:os'
+import { readFile } from 'node:fs/promises'
 
 let reporter
 /* c8 ignore next 4 */
@@ -28,10 +29,17 @@ const args = parseArgs({
     concurrency: { type: 'string', short: 'c', default: os.availableParallelism() - 1 + '' },
     coverage: { type: 'boolean', short: 'C' },
     timeout: { type: 'string', short: 't', default: '30000' },
-    'coverage-exclude': { type: 'string', short: 'X' }
+    'coverage-exclude': { type: 'string', short: 'X', multiple: true },
+    ignore: { type: 'string', short: 'i', multiple: true },
+    help: { type: 'boolean', short: 'h' }
   },
   allowPositionals: true
 })
+
+if (args.values.help) {
+  console.log(await readFile(new URL('./README.md', import.meta.url), 'utf8'))
+  process.exit(0)
+}
 
 if (args.values.concurrency) {
   args.values.concurrency = parseInt(args.values.concurrency)
@@ -66,11 +74,9 @@ try {
   await finished(stream)
 
   if (covDir) {
-    let exclude = (args.values['coverage-exclude'] || '').split(',').filter(Boolean)
+    let exclude = args.values['coverage-exclude']
 
-    if (exclude.length === 0) {
-      exclude = undefined
-    } else if (config.prefix) {
+    if (exclude && config.prefix) {
       const localPrefix = relative(process.cwd(), config.prefix)
       exclude = exclude.map((file) => posix.join(localPrefix, file))
     }
