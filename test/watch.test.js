@@ -71,7 +71,7 @@ test('watch file syntax error', async (t) => {
     controller.abort()
     try {
       await rm(dir, { recursive: true, retryDelay: 100, maxRetries: 10 })
-    } catch {} 
+    } catch {}
   })
 
   const config = {
