@@ -4,6 +4,9 @@
   "type": "module",
   "description": "node:test wrapper with TypeScript support",
   "main": "borp.js",
+  "bin": {
+    "borp": "borp.js"
+  },
   "scripts": {
     "clean": "rm -rf fixtures/*/dist .test-*",
     "lint": "standard | snazzy",
