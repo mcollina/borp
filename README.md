@@ -91,6 +91,7 @@ Note the use of `incremental: true`, which speed up compilation massively.
 * `--timeout` or `-t`, timeouts the tests after a given time; default is 30000 ms
 * `--coverage-exclude` or `-X`, a list of comma-separated patterns to exclude from the coverage report. All tests files are ignored by default.
 * `--ignore` or `-i`, ignore a glob pattern, and not look for tests there
+* `--expose-gc`, exposes the gc() function to tests
 * `--pattern` or `-p`, run tests matching the given glob pattern
 
 ## License
