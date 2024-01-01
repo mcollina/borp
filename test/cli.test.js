@@ -32,3 +32,13 @@ test('--expose-gc flag enables garbage collection in tests', async () => {
     cwd: join(import.meta.url, '..', 'fixtures', 'gc')
   })
 })
+
+test('failing test with --expose-gc flag sets correct status code', async () => {
+  // execa rejects if status code is not 0
+  await rejects(execa('node', [
+    borp,
+    '--expose-gc'
+  ], {
+    cwd: join(import.meta.url, '..', 'fixtures', 'fails')
+  }))
+})
