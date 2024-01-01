@@ -30,6 +30,7 @@ const args = parseArgs({
     timeout: { type: 'string', short: 't', default: '30000' },
     'coverage-exclude': { type: 'string', short: 'X', multiple: true },
     ignore: { type: 'string', short: 'i', multiple: true },
+    'expose-gc': { type: 'boolean' },
     help: { type: 'boolean', short: 'h' }
   },
   allowPositionals: true
