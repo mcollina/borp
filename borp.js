@@ -9,6 +9,7 @@ import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
 import { Report } from 'c8'
 import os from 'node:os'
+import { execa } from 'execa'
 
 let reporter
 /* c8 ignore next 4 */
@@ -30,15 +31,30 @@ const args = parseArgs({
     timeout: { type: 'string', short: 't', default: '30000' },
     'coverage-exclude': { type: 'string', short: 'X', multiple: true },
     ignore: { type: 'string', short: 'i', multiple: true },
+    'expose-gc': { type: 'boolean' },
     help: { type: 'boolean', short: 'h' }
   },
   allowPositionals: true
 })
 
-/* c8 ignore next 4 */
+/* c8 ignore next 5 */
 if (args.values.help) {
   console.log(await readFile(new URL('./README.md', import.meta.url), 'utf8'))
   process.exit(0)
+}
+
+if (args.values['expose-gc'] && typeof global.gc !== 'function') {
+  try {
+    await execa('node', ['--expose-gc', ...process.argv.slice(1)], {
+      stdio: 'inherit',
+      env: {
+        ...process.env
+      }
+    })
+    process.exit(0)
+  } catch (error) {
+    process.exit(1)
+  }
 }
 
 if (args.values.concurrency) {
