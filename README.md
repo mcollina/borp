@@ -17,7 +17,7 @@ npm i borp --save-dev
 borp --coverage
 ```
 
-Borp will autumatically run all tests files matching `*.test.{js|ts}`.
+Borp will automatically run all tests files matching `*.test.{js|ts}`.
 
 ### Example project setup
 
