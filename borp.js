@@ -2,11 +2,14 @@
 
 import { parseArgs } from 'node:util'
 import { tap, spec } from 'node:test/reporters'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, rm, readFile } from 'node:fs/promises'
 import { finished } from 'node:stream/promises'
 import { join, relative } from 'node:path'
+import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
 import { Report } from 'c8'
+import os from 'node:os'
+import { execa } from 'execa'
 
 let reporter
 /* c8 ignore next 4 */
@@ -23,13 +26,36 @@ const args = parseArgs({
     only: { type: 'boolean', short: 'o' },
     watch: { type: 'boolean', short: 'w' },
     pattern: { type: 'string', short: 'p' },
-    concurrency: { type: 'string', short: 'c' },
+    concurrency: { type: 'string', short: 'c', default: os.availableParallelism() - 1 + '' },
     coverage: { type: 'boolean', short: 'C' },
     timeout: { type: 'string', short: 't', default: '30000' },
-    'coverage-exclude': { type: 'string', short: 'X' }
+    'coverage-exclude': { type: 'string', short: 'X', multiple: true },
+    ignore: { type: 'string', short: 'i', multiple: true },
+    'expose-gc': { type: 'boolean' },
+    help: { type: 'boolean', short: 'h' }
   },
   allowPositionals: true
 })
+
+/* c8 ignore next 5 */
+if (args.values.help) {
+  console.log(await readFile(new URL('./README.md', import.meta.url), 'utf8'))
+  process.exit(0)
+}
+
+if (args.values['expose-gc'] && typeof global.gc !== 'function') {
+  try {
+    await execa('node', ['--expose-gc', ...process.argv.slice(1)], {
+      stdio: 'inherit',
+      env: {
+        ...process.env
+      }
+    })
+    process.exit(0)
+  } catch (error) {
+    process.exit(1)
+  }
+}
 
 if (args.values.concurrency) {
   args.values.concurrency = parseInt(args.values.concurrency)
@@ -41,7 +67,7 @@ if (args.values.timeout) {
 
 let covDir
 if (args.values.coverage) {
-  covDir = await mkdtemp(join(process.cwd(), 'coverage-'))
+  covDir = await mkdtemp(join(os.tmpdir(), 'coverage-'))
   process.env.NODE_V8_COVERAGE = covDir
 }
 
@@ -55,18 +81,20 @@ const config = {
 try {
   const stream = await runWithTypeScript(config)
 
+  stream.on('test:fail', () => {
+    process.exitCode = 1
+  })
+
   stream.compose(reporter).pipe(process.stdout)
 
   await finished(stream)
 
   if (covDir) {
-    let exclude = (args.values['coverage-exclude'] || '').split(',').filter(Boolean)
+    let exclude = args.values['coverage-exclude']
 
-    if (exclude.length === 0) {
-      exclude = undefined
-    } else if (config.prefix) {
+    if (exclude && config.prefix) {
       const localPrefix = relative(process.cwd(), config.prefix)
-      exclude = exclude.map((file) => join(localPrefix, file))
+      exclude = exclude.map((file) => posix.join(localPrefix, file))
     }
     const report = Report({
       reporter: ['text'],
@@ -81,6 +109,9 @@ try {
   console.error(err)
 } finally {
   if (covDir) {
-    await rm(covDir, { recursive: true })
+    try {
+      await rm(covDir, { recursive: true, maxRetries: 10, retryDelay: 100 })
+      /* c8 ignore next 2 */
+    } catch {}
   }
 }

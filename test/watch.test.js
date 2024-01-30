@@ -17,7 +17,9 @@ test('watch', async (t) => {
   const controller = new AbortController()
   t.after(async () => {
     controller.abort()
-    await rm(dir, { recursive: true })
+    try {
+      await rm(dir, { recursive: true, retryDelay: 100, maxRetries: 10 })
+    } catch {}
   })
 
   const config = {
@@ -67,7 +69,9 @@ test('watch file syntax error', async (t) => {
   const controller = new AbortController()
   t.after(async () => {
     controller.abort()
-    await rm(dir, { recursive: true })
+    try {
+      await rm(dir, { recursive: true, retryDelay: 100, maxRetries: 10 })
+    } catch {}
   })
 
   const config = {
