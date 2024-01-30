@@ -19,10 +19,10 @@ jobs:
         node-version: [18.x, 20.x, 21.x]
         os: [ubuntu-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -36,8 +36,8 @@ jobs:
 
       - name: Run tests
         run: |
-          npm run unit -- --reporter spec --reporter tap:report.tap
+          npm run unit -- --reporter spec --reporter md:report.md
 
-      - uses: pcolby/tap-summary@v1
-        with:
-          path: report.tap
+      - name: Upload report
+        run: |
+          echo report.md >> "$GITHUB_OUTPUT"

@@ -8,15 +8,15 @@ import { finished } from 'node:stream/promises'
 import { join, relative } from 'node:path'
 import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
+import { MarkdownReporter } from './lib/reporter.js'
 import { Report } from 'c8'
 import os from 'node:os'
 import { execa } from 'execa'
 
-const reporters = {
-  ...Reporters,
-  /* eslint new-cap: "off" */
-  spec: new Reporters.spec()
-}
+process.on('unhandledRejection', (err) => {
+  console.error(err)
+  process.exit(1)
+})
 
 const args = parseArgs({
   args: process.argv.slice(2),
@@ -87,6 +87,14 @@ const config = {
 
 try {
   const pipes = []
+
+  const reporters = {
+    ...Reporters,
+    md: new MarkdownReporter(config),
+    /* eslint new-cap: "off" */
+    spec: new Reporters.spec()
+  }
+
   for (const input of args.values.reporter) {
     const [name, dest] = input.split(':')
     const reporter = reporters[name]
