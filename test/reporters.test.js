@@ -54,7 +54,7 @@ describe('MarkdownReporter', async () => {
       output += chunk
     }
 
-    strictEqual(output.replace('\\', '/'), `# Summary
+    strictEqual(output.replaceAll('\\', '/'), `# Summary
 ## test/add.test.ts
 ### :white_check_mark: Pass
 * __add__, duration 100ms, line 1
@@ -98,7 +98,7 @@ describe('MarkdownReporter', async () => {
       output += chunk
     }
 
-    strictEqual(output.replace('\\', '/'), `# Summary
+    strictEqual(output.replaceAll('\\', '/'), `# Summary
 ## test/add.test.ts
 ### :white_check_mark: Pass
 * __add__, duration 100ms, line 1
@@ -164,6 +164,6 @@ describe('GithubWorkflowFailuresReporter', async () => {
       '::error file=test/add.test.ts,line=10::add3\n'
     ].join('')
 
-    strictEqual(output.replace('\\', '/'), expected)
+    strictEqual(output.replaceAll('\\', '/'), expected)
   })
 })
