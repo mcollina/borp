@@ -40,5 +40,6 @@ jobs:
 
       - name: Upload report
         shell: bash
+        if: success() || failure() 
         run: |
           cat report.md >> "$GITHUB_STEP_SUMMARY"
