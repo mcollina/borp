@@ -36,12 +36,8 @@ jobs:
 
       - name: Run tests
         run: |
-          npm run unit -- --reporter spec --reporter junit:report.xml
+          npm run unit -- --reporter spec --reporter tap:report.tap
 
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()    # run this step even if previous step failed
+      - uses: pcolby/tap-summary@v1
         with:
-          name: Tests                 # Name of the check run which will be created
-          path: report.xml            # Path to test results
-          reporter: java-junit        # Format of test results
+          path: report.tap
