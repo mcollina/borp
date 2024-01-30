@@ -3,6 +3,7 @@ import { test, describe } from 'node:test'
 import { strictEqual } from 'node:assert'
 
 const cwd = process.platform === 'win32' ? 'C:\\foo' : '/foo'
+const base = process.platform === 'win32' ? 'file://C:\\foo\\test\\' : 'file:///foo/test/'
 
 describe('MarkdownReporter', async () => {
   test('should write a report', async () => {
@@ -18,7 +19,7 @@ describe('MarkdownReporter', async () => {
       type: 'test:pass',
       data: {
         name: 'add',
-        file: 'file:///foo/test/add.test.ts',
+        file: base + 'add.test.ts',
         line: 1,
         details: {
           duration_ms: 100
@@ -30,7 +31,7 @@ describe('MarkdownReporter', async () => {
       type: 'test:pass',
       data: {
         name: 'add2',
-        file: 'file:///foo/test/add.test.ts',
+        file: base + 'add.test.ts',
         line: 2,
         details: {
           duration_ms: 100
@@ -42,7 +43,7 @@ describe('MarkdownReporter', async () => {
       type: 'test:fail',
       data: {
         name: 'add3',
-        file: 'file:///foo/test/add.test.ts',
+        file: base + 'add.test.ts',
         line: 10,
         details: {
           duration_ms: 100
@@ -73,7 +74,7 @@ describe('MarkdownReporter', async () => {
       type: 'test:pass',
       data: {
         name: 'add',
-        file: 'file:///foo/test/add.test.ts',
+        file: base + 'add.test.ts',
         line: 1,
         details: {
           duration_ms: 100
@@ -85,7 +86,7 @@ describe('MarkdownReporter', async () => {
       type: 'test:pass',
       data: {
         name: 'add2',
-        file: 'file:///foo/test/add.test.ts',
+        file: base + 'add.test.ts',
         line: 2,
         details: {
           duration_ms: 100
@@ -123,7 +124,7 @@ describe('GithubWorkflowFailuresReporter', async () => {
       type: 'test:pass',
       data: {
         name: 'add',
-        file: 'file:///foo/test/add.test.ts',
+        file: base + 'add.test.ts',
         line: 1,
         details: {
           duration_ms: 100
@@ -135,7 +136,7 @@ describe('GithubWorkflowFailuresReporter', async () => {
       type: 'test:fail',
       data: {
         name: 'add2',
-        file: 'file:///foo/test/add.test.ts',
+        file: base + 'add.test.ts',
         line: 2,
         details: {
           duration_ms: 100
@@ -147,7 +148,7 @@ describe('GithubWorkflowFailuresReporter', async () => {
       type: 'test:fail',
       data: {
         name: 'add3',
-        file: 'file:///foo/test/add.test.ts',
+        file: base + 'add.test.ts',
         line: 10,
         details: {
           duration_ms: 100
