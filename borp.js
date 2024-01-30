@@ -38,7 +38,8 @@ const args = parseArgs({
         /* c8 ignore next 1 */
         process.stdout.isTTY ? 'spec' : 'tap'
       ],
-      multiple: true },
+      multiple: true
+    }
   },
   allowPositionals: true
 })
@@ -104,7 +105,6 @@ try {
   stream.on('test:fail', () => {
     process.exitCode = 1
   })
-
 
   for (const [reporter, output] of pipes) {
     stream.compose(reporter).pipe(output)
