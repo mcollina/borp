@@ -1,8 +1,9 @@
 #! /usr/bin/env node
 
 import { parseArgs } from 'node:util'
-import { tap, spec } from 'node:test/reporters'
+import Reporters from 'node:test/reporters'
 import { mkdtemp, rm, readFile } from 'node:fs/promises'
+import { createWriteStream } from 'node:fs'
 import { finished } from 'node:stream/promises'
 import { join, relative } from 'node:path'
 import posix from 'node:path/posix'
@@ -11,13 +12,10 @@ import { Report } from 'c8'
 import os from 'node:os'
 import { execa } from 'execa'
 
-let reporter
-/* c8 ignore next 4 */
-if (process.stdout.isTTY) {
+const reporters = {
+  ...Reporters,
   /* eslint new-cap: "off" */
-  reporter = new spec()
-} else {
-  reporter = tap
+  spec: new Reporters.spec()
 }
 
 const args = parseArgs({
@@ -32,7 +30,15 @@ const args = parseArgs({
     'coverage-exclude': { type: 'string', short: 'X', multiple: true },
     ignore: { type: 'string', short: 'i', multiple: true },
     'expose-gc': { type: 'boolean' },
-    help: { type: 'boolean', short: 'h' }
+    help: { type: 'boolean', short: 'h' },
+    reporter: {
+      type: 'string',
+      short: 'r',
+      default: [
+        /* c8 ignore next 1 */
+        process.stdout.isTTY ? 'spec' : 'tap'
+      ],
+      multiple: true },
   },
   allowPositionals: true
 })
@@ -79,13 +85,30 @@ const config = {
 }
 
 try {
+  const pipes = []
+  for (const input of args.values.reporter) {
+    const [name, dest] = input.split(':')
+    const reporter = reporters[name]
+    if (!reporter) {
+      throw new Error(`Unknown reporter: ${name}`)
+    }
+    let output = process.stdout
+    if (dest) {
+      output = createWriteStream(dest)
+    }
+    pipes.push([reporter, output])
+  }
+
   const stream = await runWithTypeScript(config)
 
   stream.on('test:fail', () => {
     process.exitCode = 1
   })
 
-  stream.compose(reporter).pipe(process.stdout)
+
+  for (const [reporter, output] of pipes) {
+    stream.compose(reporter).pipe(output)
+  }
 
   await finished(stream)
 
