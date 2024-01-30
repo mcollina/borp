@@ -3,6 +3,7 @@ import { match, doesNotMatch } from 'node:assert'
 import { execa } from 'execa'
 import { join } from 'desm'
 
+delete process.env.GITHUB_ACTION
 const borp = join(import.meta.url, '..', 'borp.js')
 
 test('coverage', async () => {

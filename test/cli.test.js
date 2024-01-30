@@ -5,6 +5,8 @@ import { rejects } from 'node:assert'
 
 const borp = join(import.meta.url, '..', 'borp.js')
 
+delete process.env.GITHUB_ACTION
+
 test('limit concurrency', async () => {
   await execa('node', [
     borp,

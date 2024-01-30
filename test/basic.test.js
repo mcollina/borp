@@ -186,7 +186,3 @@ test('js-esm', async (t) => {
 
   await completed
 })
-
-test('this fails', async (t) => {
-  throw new Error('this fails')
-})

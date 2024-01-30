@@ -8,11 +8,12 @@ import { finished } from 'node:stream/promises'
 import { join, relative } from 'node:path'
 import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
-import { MarkdownReporter, GithubWorkflowFailuresReporter } from './lib/reporter.js'
+import { MarkdownReporter, GithubWorkflowFailuresReporter } from './lib/reporters.js'
 import { Report } from 'c8'
 import os from 'node:os'
 import { execa } from 'execa'
 
+/* c8 ignore next 4 */
 process.on('unhandledRejection', (err) => {
   console.error(err)
   process.exit(1)
@@ -94,6 +95,12 @@ try {
     gh: new GithubWorkflowFailuresReporter(config),
     /* eslint new-cap: "off" */
     spec: new Reporters.spec()
+  }
+
+  // If we're running in a GitHub action, adds the gh reporter
+  // by default so that we can report failures to GitHub
+  if (process.env.GITHUB_ACTION) {
+    args.values.reporter.push('gh')
   }
 
   for (const input of args.values.reporter) {
