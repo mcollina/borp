@@ -36,13 +36,12 @@ jobs:
 
       - name: Run tests
         run: |
-          mkdir reports
-          npm run unit -- --reporter spec --reporter junit:reports/$GITHUB_ACTION.xml
+          npm run unit -- --reporter spec --reporter junit:report.xml
 
       - name: Test Report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Tests                 # Name of the check run which will be created
-          path: reports/*.xml         # Path to test results
+          path: report.xml            # Path to test results
           reporter: java-junit        # Format of test results
