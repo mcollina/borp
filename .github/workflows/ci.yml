@@ -37,7 +37,7 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports
-          npm run unit -- --reporter spec --reporter junit:reports/${{GITHUB_ACTION}}.xml
+          npm run unit -- --reporter spec --reporter junit:reports/${{vars.GITHUB_ACTION}}.xml
 
       - name: Test Report
         uses: dorny/test-reporter@v1
