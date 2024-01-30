@@ -8,7 +8,7 @@ import { finished } from 'node:stream/promises'
 import { join, relative } from 'node:path'
 import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
-import { MarkdownReporter } from './lib/reporter.js'
+import { MarkdownReporter, GithubWorkflowFailuresReporter } from './lib/reporter.js'
 import { Report } from 'c8'
 import os from 'node:os'
 import { execa } from 'execa'
@@ -91,6 +91,7 @@ try {
   const reporters = {
     ...Reporters,
     md: new MarkdownReporter(config),
+    gh: new GithubWorkflowFailuresReporter(config),
     /* eslint new-cap: "off" */
     spec: new Reporters.spec()
   }
