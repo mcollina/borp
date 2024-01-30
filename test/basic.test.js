@@ -194,6 +194,5 @@ test('js-esm', async (t) => {
 test('this fails on windows', async (t) => {
   if (process.platform === 'win32') {
     throw new Error('windows')
-    return
   }
 })
