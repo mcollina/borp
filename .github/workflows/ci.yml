@@ -40,4 +40,4 @@ jobs:
 
       - name: Upload report
         run: |
-          echo report.md >> "$GITHUB_OUTPUT"
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
