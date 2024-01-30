@@ -39,5 +39,6 @@ jobs:
           npm run unit -- --reporter spec --reporter md:report.md
 
       - name: Upload report
+        shell: bash
         run: |
           cat report.md >> "$GITHUB_STEP_SUMMARY"
