@@ -24,6 +24,10 @@ test('ts-esm', async (t) => {
     names.delete(test.name)
   })
 
+  stream.on('data', (test) => {
+    console.log(JSON.stringify(test))
+  })
+
   await completed
 })
 
@@ -185,4 +189,11 @@ test('js-esm', async (t) => {
   stream.resume()
 
   await completed
+})
+
+test('this fails on windows', async (t) => {
+  if (process.platform === 'win32') {
+    throw new Error('windows')
+    return
+  }
 })
