@@ -1,6 +1,6 @@
 # borp
 
-Borp is a typescript-aware runner for tests written using `node:test`.
+Borp is a typescript-aware test runner for `node:test`.
 It also support code coverage via [c8](http://npm.im/c8).
 
 Borp is self-hosted, i.e. Borp runs its own tests.
@@ -94,6 +94,7 @@ Note the use of `incremental: true`, which speed up compilation massively.
 * `--expose-gc`, exposes the gc() function to tests
 * `--pattern` or `-p`, run tests matching the given glob pattern
 * `--reporter` or `-r`, set up a reporter, use a colon to set a file destination. Default: `spec`.
+* `--no-typescript` or `-T`, disable automatic TypeScript compilation if `tsconfig.json` is found.
 
 ## Reporters
 
