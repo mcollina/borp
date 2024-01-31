@@ -1,24 +1,23 @@
 #! /usr/bin/env node
 
 import { parseArgs } from 'node:util'
-import { tap, spec } from 'node:test/reporters'
+import Reporters from 'node:test/reporters'
 import { mkdtemp, rm, readFile } from 'node:fs/promises'
+import { createWriteStream } from 'node:fs'
 import { finished } from 'node:stream/promises'
 import { join, relative } from 'node:path'
 import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
+import { MarkdownReporter, GithubWorkflowFailuresReporter } from './lib/reporters.js'
 import { Report } from 'c8'
 import os from 'node:os'
 import { execa } from 'execa'
 
-let reporter
 /* c8 ignore next 4 */
-if (process.stdout.isTTY) {
-  /* eslint new-cap: "off" */
-  reporter = new spec()
-} else {
-  reporter = tap
-}
+process.on('unhandledRejection', (err) => {
+  console.error(err)
+  process.exit(1)
+})
 
 const args = parseArgs({
   args: process.argv.slice(2),
@@ -32,7 +31,13 @@ const args = parseArgs({
     'coverage-exclude': { type: 'string', short: 'X', multiple: true },
     ignore: { type: 'string', short: 'i', multiple: true },
     'expose-gc': { type: 'boolean' },
-    help: { type: 'boolean', short: 'h' }
+    help: { type: 'boolean', short: 'h' },
+    reporter: {
+      type: 'string',
+      short: 'r',
+      default: ['spec'],
+      multiple: true
+    }
   },
   allowPositionals: true
 })
@@ -79,13 +84,44 @@ const config = {
 }
 
 try {
+  const pipes = []
+
+  const reporters = {
+    ...Reporters,
+    md: new MarkdownReporter(config),
+    gh: new GithubWorkflowFailuresReporter(config),
+    /* eslint new-cap: "off" */
+    spec: new Reporters.spec()
+  }
+
+  // If we're running in a GitHub action, adds the gh reporter
+  // by default so that we can report failures to GitHub
+  if (process.env.GITHUB_ACTION) {
+    args.values.reporter.push('gh')
+  }
+
+  for (const input of args.values.reporter) {
+    const [name, dest] = input.split(':')
+    const reporter = reporters[name]
+    if (!reporter) {
+      throw new Error(`Unknown reporter: ${name}`)
+    }
+    let output = process.stdout
+    if (dest) {
+      output = createWriteStream(dest)
+    }
+    pipes.push([reporter, output])
+  }
+
   const stream = await runWithTypeScript(config)
 
   stream.on('test:fail', () => {
     process.exitCode = 1
   })
 
-  stream.compose(reporter).pipe(process.stdout)
+  for (const [reporter, output] of pipes) {
+    stream.compose(reporter).pipe(output)
+  }
 
   await finished(stream)
 
