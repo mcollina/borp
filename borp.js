@@ -35,10 +35,7 @@ const args = parseArgs({
     reporter: {
       type: 'string',
       short: 'r',
-      default: [
-        /* c8 ignore next 1 */
-        process.stdout.isTTY ? 'spec' : 'tap'
-      ],
+      default: ['spec'],
       multiple: true
     }
   },
