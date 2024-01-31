@@ -46,7 +46,7 @@ test('ts-cjs', async (t) => {
   await completed
 })
 
-test('ts-esm with named failes', async (t) => {
+test('ts-esm with named files', async (t) => {
   const { strictEqual, completed, match } = tspl(t, { plan: 3 })
   const config = {
     files: ['test/add.test.ts'],

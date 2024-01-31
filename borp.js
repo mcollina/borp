@@ -32,6 +32,7 @@ const args = parseArgs({
     ignore: { type: 'string', short: 'i', multiple: true },
     'expose-gc': { type: 'boolean' },
     help: { type: 'boolean', short: 'h' },
+    'no-typescript': { type: 'boolean', short: 'T' },
     reporter: {
       type: 'string',
       short: 'r',
@@ -78,6 +79,7 @@ if (args.values.coverage) {
 
 const config = {
   ...args.values,
+  typescript: !args.values['no-typescript'],
   files: args.positionals,
   pattern: args.values.pattern,
   cwd: process.cwd()
