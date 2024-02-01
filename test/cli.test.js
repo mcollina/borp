@@ -60,3 +60,18 @@ test('disable ts and run no tests', async () => {
 
   strictEqual(stdout.indexOf('tests 0') >= 0, true)
 })
+
+test('reporter from node_modules', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm2')
+  await rm(path.join(cwd, 'dist'), { recursive: true, force: true })
+  const { stdout } = await execa('node', [
+    borp,
+    '--reporter=spec',
+    '--reporter=@reporters/silent',
+    '--no-typescript'
+  ], {
+    cwd
+  })
+
+  strictEqual(stdout.indexOf('tests 0') >= 0, true)
+})

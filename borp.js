@@ -90,9 +90,7 @@ try {
 
   const reporters = {
     ...Reporters,
-    gh: githubReporter,
-    /* eslint new-cap: "off" */
-    spec: new Reporters.spec()
+    gh: githubReporter
   }
 
   // If we're running in a GitHub action, adds the gh reporter
@@ -103,10 +101,8 @@ try {
 
   for (const input of args.values.reporter) {
     const [name, dest] = input.split(':')
-    const reporter = reporters[name]
-    if (!reporter) {
-      throw new Error(`Unknown reporter: ${name}`)
-    }
+    const Ctor = reporters[name] || await import(name).then((m) => m.default || m)
+    const reporter = Object.getOwnPropertyDescriptor(Ctor.prototype, 'constructor') ? new Ctor() : Ctor
     let output = process.stdout
     if (dest) {
       output = createWriteStream(dest)
