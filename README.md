@@ -100,7 +100,7 @@ Note the use of `incremental: true`, which speed up compilation massively.
 
 Here are the available reporters:
 
-* `gh`: emits `::error` workflow commands for GitHub Actions to show inlined error. Enabled by default when running on GHA.
+* `gh`: emits `::error` workflow commands for GitHub Actions to show inlined errors. Enabled by default when running on GHA.
 * `tap`: outputs the test results in the TAP format.
 * `spec`: outputs the test results in a human-readable format.
 * `dot`: outputs the test results in a compact format, where each passing test is represented by a ., and each failing test is represented by a X.
