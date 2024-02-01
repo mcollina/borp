@@ -186,3 +186,7 @@ test('js-esm', async (t) => {
 
   await completed
 })
+
+test('should fail', async (t) => {
+  throw new Error('kaboom')
+})
