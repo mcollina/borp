@@ -100,64 +100,11 @@ Note the use of `incremental: true`, which speed up compilation massively.
 
 Here are the available reporters:
 
-* `md`: creates a markdown table, useful for setting up a Summary in your GitHub Action
-* `gh`: emits `::error` workflow commands for GitHub Actions to show inlined error. Enabled by default when running on GHA.
+* `gh`: emits `::error` workflow commands for GitHub Actions to show inlined errors. Enabled by default when running on GHA.
 * `tap`: outputs the test results in the TAP format.
 * `spec`: outputs the test results in a human-readable format.
 * `dot`: outputs the test results in a compact format, where each passing test is represented by a ., and each failing test is represented by a X.
 * `junit`: outputs test results in a jUnit XML format
-
-## GitHub Action Summary
-
-The following will automatically show the summary of the test run in the summary page of GitHub Actions.
-
-```yaml
-name: ci
-
-on:
-  push:
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      
-jobs:
-  test:
-    runs-on: ${{matrix.os}}
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 21.x]
-        os: [ubuntu-latest, windows-latest]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Install
-        run: |
-          npm install
-
-      - name: Lint
-        run: |
-          npm run lint
-
-      - name: Run tests
-        run: |
-          npm run unit -- --reporter spec --reporter md:report.md
-
-      - name: Upload report
-        shell: bash
-        if: success() || failure() 
-        run: |
-          cat report.md >> "$GITHUB_STEP_SUMMARY"
-```
 
 ## License
 
