@@ -36,10 +36,4 @@ jobs:
 
       - name: Run tests
         run: |
-          npm run unit -- --reporter spec --reporter md:report.md --reporter gh
-
-      - name: Upload report
-        shell: bash
-        if: success() || failure() 
-        run: |
-          cat report.md >> "$GITHUB_STEP_SUMMARY"
+          npm run unit -- --reporter spec
