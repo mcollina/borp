@@ -66,7 +66,7 @@ test('reporter from node_modules', async () => {
   const { stdout } = await execa('node', [
     borp,
     '--reporter=spec',
-    '--reporter=@reporters/silent',
+    '--reporter=@reporters/silent'
   ], {
     cwd
   })
