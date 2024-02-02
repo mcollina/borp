@@ -102,7 +102,7 @@ try {
   for (const input of args.values.reporter) {
     const [name, dest] = input.split(':')
     const Ctor = reporters[name] || await import(name).then((m) => m.default || m)
-    const reporter = Object.getOwnPropertyDescriptor(Ctor.prototype, 'constructor') ? new Ctor() : Ctor
+    const reporter = Ctor.prototype && Object.getOwnPropertyDescriptor(Ctor.prototype, 'constructor') ? new Ctor() : Ctor
     let output = process.stdout
     if (dest) {
       output = createWriteStream(dest)
@@ -140,6 +140,7 @@ try {
   /* c8 ignore next 3 */
 } catch (err) {
   console.error(err)
+  process.exitCode = 1
 } finally {
   if (covDir) {
     try {
