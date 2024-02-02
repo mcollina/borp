@@ -62,16 +62,29 @@ test('disable ts and run no tests', async () => {
 })
 
 test('reporter from node_modules', async () => {
-  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm2')
-  await rm(path.join(cwd, 'dist'), { recursive: true, force: true })
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
   const { stdout } = await execa('node', [
     borp,
     '--reporter=spec',
     '--reporter=@reporters/silent',
-    '--no-typescript'
   ], {
     cwd
   })
 
-  strictEqual(stdout.indexOf('tests 0') >= 0, true)
+  strictEqual(stdout.indexOf('tests 2') >= 0, true)
+})
+
+test('gh reporter', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
+  const { stdout } = await execa('node', [
+    borp,
+    '--reporter=gh'
+  ], {
+    cwd,
+    env: {
+      GITHUB_ACTIONS: '1'
+    }
+  })
+
+  strictEqual(stdout.indexOf('::notice') >= 0, true)
 })
