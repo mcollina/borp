@@ -2,9 +2,7 @@ import { test } from 'node:test'
 import { tspl } from '@matteo.collina/tspl'
 import runWithTypeScript from '../lib/run.js'
 import { join } from 'desm'
-import { exec } from 'node:child_process'
-import { promisify } from 'node:util'
-const execAsync = promisify(exec)
+import { execa } from 'execa'
 
 test('ts-esm', async (t) => {
   const { strictEqual, completed, match } = tspl(t, { plan: 4 })
@@ -151,7 +149,7 @@ test('monorepo', async (t) => {
     cwd: join(import.meta.url, '..', 'fixtures', 'monorepo/package2')
   }
 
-  await execAsync('npm install', { cwd: join(import.meta.url, '..', 'fixtures', 'monorepo') })
+  await execa('npm', ['install'], { cwd: join(import.meta.url, '..', 'fixtures', 'monorepo') })
   const stream = await runWithTypeScript(config)
 
   const names = new Set(['package2-add', 'package2-add2'])
