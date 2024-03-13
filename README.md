@@ -85,6 +85,7 @@ Note the use of `incremental: true`, which speed up compilation massively.
 
 ## Options
 
+* `--concurrency` or `-c`, to set the number of concurrent tests. Defaults to the number of available CPUs minus one.
 * `--coverage` or `-C`, enables code coverage
 * `--only` or `-o`, only run `node:test` with the `only` option set  
 * `--watch` or `-w`, re-run tests on changes
