@@ -110,7 +110,7 @@ test('add', () => {
   await completed
 })
 
-test('watch with post compile hook', async (t) => {
+test('watch with post compile hook should call the hook the right number of times', async (t) => {
   const { strictEqual, completed, ok } = tspl(t, { plan: 2 })
 
   const dir = path.resolve(await mkdtemp('.test-watch-with-post-compile-hook'))
