@@ -148,7 +148,7 @@ test('watch with post compile hook', async (t) => {
   const diagnosticListenerFn = (test) => {
     if (test.type === 'test:diagnostic' && test.data.message.includes('Post compile hook complete')) {
       if (++postCompileEventCount === 2) {
-        ok(true, 'Post compile hook ran')
+        ok(true, 'Post compile hook ran twice')
         stream.removeListener('data', diagnosticListenerFn)
       }
     }
