@@ -33,6 +33,7 @@ const args = parseArgs({
     'expose-gc': { type: 'boolean' },
     help: { type: 'boolean', short: 'h' },
     'no-typescript': { type: 'boolean', short: 'T' },
+    'post-compile': { type: 'string', short: 'P' },
     reporter: {
       type: 'string',
       short: 'r',

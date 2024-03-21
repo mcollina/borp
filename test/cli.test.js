@@ -88,3 +88,26 @@ test('gh reporter', async () => {
 
   strictEqual(stdout.indexOf('::notice') >= 0, true)
 })
+
+test('Post compile script should be executed when --post-compile  is sent with esm', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm-post-compile')
+  const { stdout } = await execa('node', [
+    borp,
+    '--post-compile=postCompile.ts'
+  ], {
+    cwd
+  })
+
+  strictEqual(stdout.indexOf('Post compile hook complete') >= 0, true, 'Post compile message should be found in stdout')
+})
+
+test('Post compile script should be executed when --post-compile  is sent with cjs', async () => {
+  const { stdout } = await execa('node', [
+    borp,
+    '--post-compile=postCompile.ts'
+  ], {
+    cwd: join(import.meta.url, '..', 'fixtures', 'ts-cjs-post-compile')
+  })
+
+  strictEqual(stdout.indexOf('Post compile hook complete') >= 0, true, 'Post compile message should be found in stdout')
+})

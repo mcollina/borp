@@ -109,3 +109,64 @@ test('add', () => {
 
   await completed
 })
+
+test('watch with post compile hook should call the hook the right number of times', async (t) => {
+  const { strictEqual, completed, ok } = tspl(t, { plan: 2 })
+
+  const dir = path.resolve(await mkdtemp('.test-watch-with-post-compile-hook'))
+  await cp(join(import.meta.url, '..', 'fixtures', 'ts-esm-post-compile'), dir, {
+    recursive: true
+  })
+
+  const controller = new AbortController()
+  t.after(async () => {
+    controller.abort()
+    try {
+      await rm(dir, { recursive: true, retryDelay: 100, maxRetries: 10 })
+    } catch {}
+  })
+
+  const config = {
+    'post-compile': 'postCompile.ts',
+    files: [],
+    cwd: dir,
+    signal: controller.signal,
+    watch: true
+  }
+
+  const stream = await runWithTypeScript(config)
+
+  const fn = (test) => {
+    if (test.type === 'test:fail') {
+      strictEqual(test.data.name, 'add')
+      stream.removeListener('data', fn)
+    }
+  }
+  stream.on('data', fn)
+
+  let postCompileEventCount = 0
+  const diagnosticListenerFn = (test) => {
+    if (test.type === 'test:diagnostic' && test.data.message.includes('Post compile hook complete')) {
+      if (++postCompileEventCount === 2) {
+        ok(true, 'Post compile hook ran twice')
+        stream.removeListener('data', diagnosticListenerFn)
+      }
+    }
+  }
+
+  stream.on('data', diagnosticListenerFn)
+
+  const toWrite = `
+import { test } from 'node:test'
+import { add } from '../src/add.js'
+import { strictEqual } from 'node:assert'
+
+test('add', () => {
+  strictEqual(add(1, 2), 4)
+})
+`
+  const file = path.join(dir, 'test', 'add.test.ts')
+  await writeFile(file, toWrite)
+
+  await completed
+})
