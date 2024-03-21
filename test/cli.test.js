@@ -88,3 +88,15 @@ test('gh reporter', async () => {
 
   strictEqual(stdout.indexOf('::notice') >= 0, true)
 })
+
+test('post-compile hook should be correctly called', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm-post-compile')
+  const { stdout } = await execa('node', [
+    borp,
+    '--post-compile=postCompile.ts'
+  ], {
+    cwd
+  })
+
+  strictEqual(stdout.indexOf('Post compile hook complete') >= 0, true, 'Post compile message should be found in stdout')
+})
