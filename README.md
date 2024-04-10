@@ -96,6 +96,7 @@ Note the use of `incremental: true`, which speed up compilation massively.
 * `--pattern` or `-p`, run tests matching the given glob pattern
 * `--reporter` or `-r`, set up a reporter, use a colon to set a file destination. Default: `spec`.
 * `--no-typescript` or `-T`, disable automatic TypeScript compilation if `tsconfig.json` is found.
+* `--post-compile` or `-P`, the path to a file that will be executed after each typescript compilation.
 
 ## Reporters
 
