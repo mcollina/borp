@@ -29,7 +29,6 @@ const args = parseArgs({
     concurrency: { type: 'string', short: 'c', default: os.availableParallelism() - 1 + '' },
     coverage: { type: 'boolean', short: 'C' },
     timeout: { type: 'string', short: 't', default: '30000' },
-    'check-coverage': { type: 'boolean', short: 'V' },
     'coverage-exclude': { type: 'string', short: 'X', multiple: true },
     ignore: { type: 'string', short: 'i', multiple: true },
     'expose-gc': { type: 'boolean' },
@@ -41,7 +40,12 @@ const args = parseArgs({
       short: 'r',
       default: ['spec'],
       multiple: true
-    }
+    },
+    'check-coverage': { type: 'boolean' },
+    lines: { type: 'string', default: '100' },
+    branches: { type: 'string', default: '100' },
+    functions: { type: 'string', default: '100' },
+    statements: { type: 'string', default: '100' }
   },
   allowPositionals: true
 })
@@ -140,10 +144,10 @@ try {
 
     if (args.values['check-coverage']) {
       await checkCoverages({
-        lines: 100,
-        functions: 100,
-        branches: 100,
-        statements: 100,
+        lines: parseInt(args.values.lines),
+        functions: parseInt(args.values.functions),
+        branches: parseInt(args.values.branches),
+        statements: parseInt(args.values.statements),
         ...args
       }, report)
     }
