@@ -25,30 +25,30 @@ Borp will automatically run all tests files matching `*.test.{js|ts}`.
 .
 ├── src
 │   ├── lib
-│   │   └── add.ts
+│   │   └── math.ts
 │   └── test
-│       └── add.test.ts
+│       └── math.test.ts
 └── tsconfig.json
 
 ```
 
-As an example, consider having a `src/lib/add.ts` file  
+As an example, consider having a `src/lib/math.ts` file  
 
 ```typescript
-export function add (x: number, y: number): number {
+export function math (x: number, y: number): number {
   return x + y
 }
 ```
 
-and a `src/test/add.test.ts` file:
+and a `src/test/math.test.ts` file:
 
 ```typescript
 import { test } from 'node:test'
-import { add } from '../lib/add.js'
+import { math } from '../lib/math.js'
 import { strictEqual } from 'node:assert'
 
-test('add', () => {
-  strictEqual(add(1, 2), 3)
+test('math', () => {
+  strictEqual(math(1, 2), 3)
 })
 ```
 

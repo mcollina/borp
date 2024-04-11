@@ -10,6 +10,7 @@ import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
 import githubReporter from '@reporters/github'
 import { Report } from 'c8'
+import { checkCoverages } from 'c8/lib/commands/check-coverage.js'
 import os from 'node:os'
 import { execa } from 'execa'
 
@@ -28,6 +29,7 @@ const args = parseArgs({
     concurrency: { type: 'string', short: 'c', default: os.availableParallelism() - 1 + '' },
     coverage: { type: 'boolean', short: 'C' },
     timeout: { type: 'string', short: 't', default: '30000' },
+    'check-coverage': { type: 'boolean', short: 'V' },
     'coverage-exclude': { type: 'string', short: 'X', multiple: true },
     ignore: { type: 'string', short: 'i', multiple: true },
     'expose-gc': { type: 'boolean' },
@@ -136,6 +138,15 @@ try {
       exclude
     })
 
+    if (args.values['check-coverage']) {
+      await checkCoverages({
+        lines: 100,
+        functions: 100,
+        branches: 100,
+        statements: 100,
+        ...args
+      }, report)
+    }
     await report.run()
   }
   /* c8 ignore next 3 */
