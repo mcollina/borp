@@ -14,7 +14,7 @@
   "scripts": {
     "clean": "rm -rf fixtures/*/dist .test-*",
     "lint": "standard | snazzy",
-    "unit": "node borp.js --ignore \"fixtures/**/*\" --coverage --coverage-exclude \"fixtures/**/*\" --coverage-exclude \"test/**/*\"",
+    "unit": "node borp.js --ignore \"fixtures/**/*\" --coverage --coverage-exclude \"fixtures/**/*\" --coverage-exclude \"test*/**/*\"",
     "test": "npm run clean ; npm run lint && npm run unit"
   },
   "keywords": [],
@@ -23,6 +23,7 @@
   "devDependencies": {
     "@matteo.collina/tspl": "^0.1.0",
     "@reporters/silent": "^1.2.4",
+    "@sinonjs/fake-timers": "^11.2.2",
     "@types/node": "^20.10.0",
     "desm": "^1.3.0",
     "snazzy": "^9.0.0",
