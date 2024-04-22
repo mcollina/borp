@@ -1,5 +1,6 @@
 import { test } from 'node:test'
 import { once } from 'node:events'
+import { pathToFileURL } from 'node:url'
 import { fork } from 'node:child_process'
 import { tspl } from '@matteo.collina/tspl'
 import { join } from 'desm'
@@ -8,7 +9,7 @@ const borp = join(import.meta.url, '..', 'borp.js')
 const clock = join(import.meta.url, '..', 'test-utils', 'clock.js')
 const forkOpts = {
   cwd: join(import.meta.url, '..', 'fixtures', 'long'),
-  env: { NODE_OPTIONS: `--import=${clock}` },
+  env: { NODE_OPTIONS: `--import=${pathToFileURL(clock)}` },
   stdio: ['pipe', 'pipe', 'pipe', 'ipc']
 }
 
