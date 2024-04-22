@@ -1,5 +1,5 @@
 import { test } from 'node:test'
-import { match, doesNotMatch } from 'node:assert'
+import { match, doesNotMatch, fail, equal, AssertionError } from 'node:assert'
 import { execa } from 'execa'
 import { join } from 'desm'
 
@@ -34,4 +34,50 @@ test('coverage excludes', async () => {
   // The test files are shown
   match(res.stdout, /add\.test\.ts/)
   match(res.stdout, /add2\.test\.ts/)
+})
+
+test('borp should return right error when check coverage is active with default thresholds', async (t) => {
+  try {
+    await execa('node', [
+      borp,
+      '--coverage',
+      '--check-coverage'
+    ], {
+      cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm-check-coverage')
+    })
+    fail('Should not complete borp without error')
+  } catch (e) {
+    if (e instanceof AssertionError) {
+      throw e
+    }
+
+    equal(e.exitCode, 1)
+    match(e.stderr, /ERROR: Coverage for lines \(75%\) does not meet global threshold \(100%\)/)
+    match(e.stderr, /ERROR: Coverage for functions \(50%\) does not meet global threshold \(100%\)/)
+    match(e.stderr, /ERROR: Coverage for statements \(75%\) does not meet global threshold \(100%\)/)
+  }
+})
+
+test('borp should return right error when check coverage is active with defined thresholds', async (t) => {
+  try {
+    await execa('node', [
+      borp,
+      '--coverage',
+      '--check-coverage',
+      '--lines=80',
+      '--functions=50',
+      '--statements=0',
+      '--branches=100'
+    ], {
+      cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm-check-coverage')
+    })
+    fail('Should not complete borp without error')
+  } catch (e) {
+    if (e instanceof AssertionError) {
+      throw e
+    }
+
+    equal(e.exitCode, 1)
+    match(e.stderr, /ERROR: Coverage for lines \(75%\) does not meet global threshold \(80%\)/)
+  }
 })

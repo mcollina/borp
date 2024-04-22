@@ -10,6 +10,7 @@ import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
 import githubReporter from '@reporters/github'
 import { Report } from 'c8'
+import { checkCoverages } from 'c8/lib/commands/check-coverage.js'
 import os from 'node:os'
 import { execa } from 'execa'
 
@@ -39,7 +40,12 @@ const args = parseArgs({
       short: 'r',
       default: ['spec'],
       multiple: true
-    }
+    },
+    'check-coverage': { type: 'boolean' },
+    lines: { type: 'string', default: '100' },
+    branches: { type: 'string', default: '100' },
+    functions: { type: 'string', default: '100' },
+    statements: { type: 'string', default: '100' }
   },
   allowPositionals: true
 })
@@ -136,6 +142,15 @@ try {
       exclude
     })
 
+    if (args.values['check-coverage']) {
+      await checkCoverages({
+        lines: parseInt(args.values.lines),
+        functions: parseInt(args.values.functions),
+        branches: parseInt(args.values.branches),
+        statements: parseInt(args.values.statements),
+        ...args
+      }, report)
+    }
     await report.run()
   }
   /* c8 ignore next 3 */
