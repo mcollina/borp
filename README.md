@@ -93,6 +93,7 @@ Note the use of `incremental: true`, which speed up compilation massively.
 * `--only` or `-o`, only run `node:test` with the `only` option set  
 * `--watch` or `-w`, re-run tests on changes
 * `--timeout` or `-t`, timeouts the tests after a given time; default is 30000 ms
+* `--no-timeout`, disables the timeout
 * `--coverage-exclude` or `-X`, a list of comma-separated patterns to exclude from the coverage report. All tests files are ignored by default.
 * `--ignore` or `-i`, ignore a glob pattern, and not look for tests there
 * `--expose-gc`, exposes the gc() function to tests

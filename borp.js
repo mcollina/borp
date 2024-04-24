@@ -29,6 +29,7 @@ const args = parseArgs({
     concurrency: { type: 'string', short: 'c', default: os.availableParallelism() - 1 + '' },
     coverage: { type: 'boolean', short: 'C' },
     timeout: { type: 'string', short: 't', default: '30000' },
+    'no-timeout': { type: 'boolean' },
     'coverage-exclude': { type: 'string', short: 'X', multiple: true },
     ignore: { type: 'string', short: 'i', multiple: true },
     'expose-gc': { type: 'boolean' },
@@ -72,6 +73,10 @@ if (args.values['expose-gc'] && typeof global.gc !== 'function') {
 
 if (args.values.concurrency) {
   args.values.concurrency = parseInt(args.values.concurrency)
+}
+
+if (args.values['no-timeout']) {
+  delete args.values.timeout
 }
 
 if (args.values.timeout) {
