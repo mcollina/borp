@@ -33,7 +33,7 @@
   "dependencies": {
     "@reporters/github": "^1.5.4",
     "c8": "^9.0.0",
-    "execa": "^8.0.1",
+    "execa": "^9.1.0",
     "find-up": "^7.0.0",
     "glob": "^10.3.10"
   }
