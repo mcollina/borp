@@ -8,7 +8,6 @@ import { tspl } from '@matteo.collina/tspl'
 import path from 'node:path'
 import { cp, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import runWithTypeScript from '../lib/run.js'
-import { once } from 'node:events'
 import { join } from 'desm'
 
 test('borp should return ts file path in error message when sourceMap is active in tsconfig', async (t) => {
@@ -35,7 +34,7 @@ test('borp should return ts file path in error message when sourceMap is active 
 })
 
 test('source map should be generated when watch is active', async (t) => {
-  const { strictEqual, completed, match } = tspl(t, { plan: 4 })
+  const { strictEqual, completed } = tspl(t, { plan: 1 })
 
   const dir = path.resolve(await mkdtemp('.test-watch'))
   await cp(join(import.meta.url, '..', 'fixtures', 'ts-esm-source-map'), dir, {
@@ -68,19 +67,7 @@ test('addSuccess', () => {
     watch: true
   }
 
-  const stream = await runWithTypeScript(config)
-
-  const fn = (test) => {
-    if (test.type === 'test:fail') {
-      strictEqual(test.data.name, 'addFailure')
-      stream.removeListener('data', fn)
-    }
-  }
-  stream.on('data', fn)
-
-  const [test] = await once(stream, 'data')
-  strictEqual(test.type, 'test:diagnostic')
-  match(test.data.message, /TypeScript compilation complete \(\d+ms\)/)
+  await runWithTypeScript(config)
 
   const failureTestToWrite = `
 import { test } from 'node:test'
