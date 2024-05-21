@@ -2,6 +2,7 @@
 
 import { parseArgs } from 'node:util'
 import Reporters from 'node:test/reporters'
+import { findUp } from 'find-up'
 import { mkdtemp, rm, readFile } from 'node:fs/promises'
 import { createWriteStream } from 'node:fs'
 import { finished } from 'node:stream/promises'
@@ -141,10 +142,12 @@ try {
       const localPrefix = relative(process.cwd(), config.prefix)
       exclude = exclude.map((file) => posix.join(localPrefix, file))
     }
+    const nycrc = await findUp(['.c8rc', '.c8rc.json', '.nycrc', '.nycrc.json'], { cwd: config.cwd })
     const report = Report({
       reporter: ['text'],
       tempDirectory: covDir,
-      exclude
+      exclude,
+      ...nycrc && JSON.parse(await readFile(nycrc, 'utf8'))
     })
 
     if (args.values['check-coverage']) {
