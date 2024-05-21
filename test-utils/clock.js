@@ -4,9 +4,10 @@ let clock
 
 if (process.argv[1].endsWith('borp.js')) {
   clock = FakeTimers.install({
-    node: Date.now(),
+    now: Date.now(),
     shouldAdvanceTime: true,
-    advanceTimeDelta: 100
+    advanceTimeDelta: 100,
+    toFake: ['Date', 'setTimeout', 'clearTimeout']
   })
   process.on('message', listener)
 }

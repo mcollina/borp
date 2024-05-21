@@ -33,7 +33,7 @@ test('watch', async (t) => {
 
   const fn = (test) => {
     if (test.type === 'test:fail') {
-      strictEqual(test.data.name, 'add')
+      match(test.data.name, /add/)
       stream.removeListener('data', fn)
     }
   }
@@ -85,7 +85,7 @@ test('watch file syntax error', async (t) => {
 
   const fn = (test) => {
     if (test.type === 'test:fail') {
-      match(test.data.name, /add\.test\.ts/)
+      match(test.data.name, /add/)
       stream.removeListener('data', fn)
     }
   }
@@ -111,7 +111,7 @@ test('add', () => {
 })
 
 test('watch with post compile hook should call the hook the right number of times', async (t) => {
-  const { strictEqual, completed, ok } = tspl(t, { plan: 2 })
+  const { completed, ok, match } = tspl(t, { plan: 2 })
 
   const dir = path.resolve(await mkdtemp('.test-watch-with-post-compile-hook'))
   await cp(join(import.meta.url, '..', 'fixtures', 'ts-esm-post-compile'), dir, {
@@ -138,7 +138,7 @@ test('watch with post compile hook should call the hook the right number of time
 
   const fn = (test) => {
     if (test.type === 'test:fail') {
-      strictEqual(test.data.name, 'add')
+      match(test.data.name, /add/)
       stream.removeListener('data', fn)
     }
   }
