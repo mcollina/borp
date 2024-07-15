@@ -39,4 +39,4 @@ jobs:
 
       - name: Run tests
         run: |
-          npm run unit -- --reporter spec
+          npm run unit
