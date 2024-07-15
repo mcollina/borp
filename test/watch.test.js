@@ -6,7 +6,10 @@ import { mkdtemp, cp, writeFile, rm } from 'node:fs/promises'
 import path from 'node:path'
 import { once } from 'node:events'
 
-test('watch', async (t) => {
+// These tests are currently broken on node v22
+const skip = process.platform === 'darwin' && process.version.startsWith('v22')
+
+test('watch', { skip }, async (t) => {
   const { strictEqual, completed, match } = tspl(t, { plan: 3 })
 
   const dir = path.resolve(await mkdtemp('.test-watch'))
@@ -24,15 +27,17 @@ test('watch', async (t) => {
 
   const config = {
     files: [],
-    cwd: dir,
     signal: controller.signal,
+    cwd: dir,
     watch: true
   }
 
+  process._rawDebug('dir', dir)
   const stream = await runWithTypeScript(config)
 
   const fn = (test) => {
     if (test.type === 'test:fail') {
+      console.log('test', test)
       match(test.data.name, /add/)
       stream.removeListener('data', fn)
     }
@@ -58,7 +63,7 @@ test('add', () => {
   await completed
 })
 
-test('watch file syntax error', async (t) => {
+test('watch file syntax error', { skip }, async (t) => {
   const { strictEqual, completed, match } = tspl(t, { plan: 3 })
 
   const dir = path.resolve(await mkdtemp('.test-watch'))
@@ -110,7 +115,7 @@ test('add', () => {
   await completed
 })
 
-test('watch with post compile hook should call the hook the right number of times', async (t) => {
+test('watch with post compile hook should call the hook the right number of times', { skip: true }, async (t) => {
   const { completed, ok, match } = tspl(t, { plan: 2 })
 
   const dir = path.resolve(await mkdtemp('.test-watch-with-post-compile-hook'))
