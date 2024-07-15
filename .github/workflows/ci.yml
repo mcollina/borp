@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 21.x]
+        node-version: [18.x, 20.x, 21.x, 22.x]
         os: [ubuntu-latest, windows-latest]
         exclude:
           - os: windows-latest
@@ -39,4 +39,4 @@ jobs:
 
       - name: Run tests
         run: |
-          npm run unit -- --reporter spec
+          npm run unit
