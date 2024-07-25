@@ -89,6 +89,19 @@ test('gh reporter', async () => {
   strictEqual(stdout.indexOf('::notice') >= 0, true)
 })
 
+test('interprets globs for files', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'files-glob')
+  const { stdout } = await execa('node', [
+    borp,
+    '\'test1/*.test.js\'',
+    '\'test2/**/*.test.js\''
+  ], {
+    cwd
+  })
+
+  strictEqual(stdout.indexOf('tests 2') >= 0, true)
+})
+
 test('Post compile script should be executed when --post-compile  is sent with esm', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm-post-compile')
   const { stdout } = await execa('node', [
