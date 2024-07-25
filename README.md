@@ -18,6 +18,15 @@ borp --coverage
 
 # with check coverage active
 borp --coverage --check-coverage --lines 95
+
+# with a node_modules located reporter
+borp --reporter foo
+
+# with a node_modules located reporter writing to stderr
+borp --reporter foo:stderr
+
+# with a local custom reporter
+borp --reporter ./lib/some-reporter.mjs
 ```
 
 Borp will automatically run all tests files matching `*.test.{js|ts}`.
@@ -98,7 +107,7 @@ Note the use of `incremental: true`, which speed up compilation massively.
 * `--ignore` or `-i`, ignore a glob pattern, and not look for tests there
 * `--expose-gc`, exposes the gc() function to tests
 * `--pattern` or `-p`, run tests matching the given glob pattern
-* `--reporter` or `-r`, set up a reporter, use a colon to set a file destination. Default: `spec`.
+* `--reporter` or `-r`, set up a reporter, use a colon to set a file destination. Reporter may either be a module name resolvable by standard `node_modules` resolution, or a path to a script relative to the process working directory (must be an ESM script). Default: `spec`.
 * `--no-typescript` or `-T`, disable automatic TypeScript compilation if `tsconfig.json` is found.
 * `--post-compile` or `-P`, the path to a file that will be executed after each typescript compilation.
 * `--check-coverage`, enables c8 check coverage; default is false

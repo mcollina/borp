@@ -114,7 +114,19 @@ try {
 
   for (const input of args.values.reporter) {
     const [name, dest] = input.split(':')
-    const Ctor = reporters[name] || await import(name).then((m) => m.default || m)
+    let Ctor
+    if (Object.prototype.hasOwnProperty.call(reporters, name) === true) {
+      Ctor = reporters[name]
+    } else {
+      try {
+        // Try to load a custom reporter from a file relative to the process.
+        const modPath = join(process.cwd(), name.replace(/^['"]/, '').replace(/['"]$/, ''))
+        Ctor = await import(modPath).then((m) => m.default || m)
+      } catch {
+        // Fallback to trying to load the reporter from node_modules resolution.
+        Ctor = await import(name).then((m) => m.default || m)
+      }
+    }
     const reporter = Ctor.prototype && Object.getOwnPropertyDescriptor(Ctor.prototype, 'constructor') ? new Ctor() : Ctor
     let output = process.stdout
     if (dest) {
