@@ -74,6 +74,19 @@ test('reporter from node_modules', async () => {
   strictEqual(stdout.indexOf('tests 2') >= 0, true)
 })
 
+test('reporter from relative path', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'relative-reporter')
+  const { stdout } = await execa('node', [
+    borp,
+    '--reporter=./fixtures/relative-reporter/reporter.js'
+  ], {
+    cwd
+  })
+
+  strictEqual(/passed:.+add\.test\.js/.test(stdout), true)
+  strictEqual(/passed:.+add2\.test\.js/.test(stdout), true)
+})
+
 test('gh reporter', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
   const { stdout } = await execa('node', [
