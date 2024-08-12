@@ -115,7 +115,7 @@ try {
   for (const input of args.values.reporter) {
     const [name, dest] = input.split(':')
     let Ctor
-    if (Object.prototype.hasOwnProperty.call(reporters, name) === true) {
+    if (Object.hasOwn(reporters, name) === true) {
       Ctor = reporters[name]
     } else {
       try {
