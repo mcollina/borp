@@ -11,6 +11,24 @@ on:
       - '*.md'
       
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install
+        run: |
+          npm install
+
+      - name: Lint
+        run: |
+          npm run lint
+
   test:
     runs-on: ${{matrix.os}}
 
@@ -32,10 +50,6 @@ jobs:
       - name: Install
         run: |
           npm install
-
-      - name: Lint
-        run: |
-          npm run lint
 
       - name: Run tests
         run: |
@@ -102,4 +116,4 @@ jobs:
           echo git: $(git --version)
           echo icu config: $(node -e "console.log(process.config)" | grep icu)
       - name: Run tests
-        run: npm run test
+        run: npm run unit
