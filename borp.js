@@ -6,7 +6,7 @@ import { findUp } from 'find-up'
 import { mkdtemp, rm, readFile } from 'node:fs/promises'
 import { createWriteStream } from 'node:fs'
 import { finished } from 'node:stream/promises'
-import { join, relative } from 'node:path'
+import { join, relative, resolve } from 'node:path'
 import posix from 'node:path/posix'
 import runWithTypeScript from './lib/run.js'
 import githubReporter from '@reporters/github'
@@ -14,6 +14,7 @@ import { Report } from 'c8'
 import { checkCoverages } from 'c8/lib/commands/check-coverage.js'
 import os from 'node:os'
 import { execa } from 'execa'
+import { pathToFileURL } from 'node:url'
 
 /* c8 ignore next 4 */
 process.on('unhandledRejection', (err) => {
@@ -120,7 +121,12 @@ try {
     } else {
       try {
         // Try to load a custom reporter from a file relative to the process.
-        const modPath = join(process.cwd(), name.replace(/^['"]/, '').replace(/['"]$/, ''))
+        let modPath = resolve(join(process.cwd(), name.replace(/^['"]/, '').replace(/['"]$/, '')))
+        if (process.platform === 'win32') {
+          // On Windows, absolute paths must be valid file:// URLs
+          modPath = pathToFileURL(modPath).href
+        }
+
         Ctor = await import(modPath).then((m) => m.default || m)
       } catch {
         // Fallback to trying to load the reporter from node_modules resolution.
