@@ -15,12 +15,18 @@ import { checkCoverages } from 'c8/lib/commands/check-coverage.js'
 import os from 'node:os'
 import { execa } from 'execa'
 import { pathToFileURL } from 'node:url'
+import loadConfig from './lib/conf.js'
 
 /* c8 ignore next 4 */
 process.on('unhandledRejection', (err) => {
   console.error(err)
   process.exit(1)
 })
+
+const foundConfig = await loadConfig()
+if (foundConfig.length > 0) {
+  Array.prototype.push.apply(process.argv, foundConfig)
+}
 
 const args = parseArgs({
   args: process.argv.slice(2),
