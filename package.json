@@ -1,6 +1,6 @@
 {
   "name": "borp",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "type": "module",
   "description": "node:test wrapper with TypeScript support",
   "main": "borp.js",
