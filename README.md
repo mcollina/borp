@@ -126,6 +126,33 @@ Here are the available reporters:
 * `dot`: outputs the test results in a compact format, where each passing test is represented by a ., and each failing test is represented by a X.
 * `junit`: outputs test results in a jUnit XML format
 
+## Config File Support
+
+A limited set of options may be specified via a configuration file. The
+configuration file is expected to be in the process's working directory, and
+named either `.borp.yaml` or `.borp.yml`; it may also be specified by
+defining the environment variable `BORP_CONF_FILE` and setting it to the
+full path to some yaml file.
+
+The current supported options are:
+
++ `files` (string[]): An array of test files to include. Globs are supported.
++ `reporters` (string[]): An array of reporters to use. May be relative path
+strings, or module name strings.
+
+### Example
+
+```yaml
+files:
+  - 'test/one.test.js'
+  - 'test/foo/*.test.js'
+
+reporters:
+  - './test/lib/my-reporter.js'
+  - spec
+  - '@reporters/silent'
+```
+
 ## License
 
 MIT
