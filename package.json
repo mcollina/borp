@@ -14,7 +14,7 @@
   "scripts": {
     "clean": "rm -rf fixtures/*/dist .test-*",
     "lint": "standard | snazzy",
-    "unit": "node borp.js --ignore \"fixtures/**/*\" --coverage --coverage-exclude \"fixtures/**/*\" --coverage-exclude \"test*/**/*\"",
+    "unit": "node borp.js --ignore \"fixtures/**/*\" -C --coverage-exclude \"fixtures/**/*\" --coverage-exclude \"test*/**/*\"",
     "test": "npm run clean ; npm run lint && npm run unit"
   },
   "keywords": [],
