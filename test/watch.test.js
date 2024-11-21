@@ -5,9 +5,10 @@ import { join } from 'desm'
 import { mkdtemp, cp, writeFile, rm } from 'node:fs/promises'
 import path from 'node:path'
 import { once } from 'node:events'
+import semver from 'semver'
 
-// These tests are currently broken on node v22
-const skip = process.platform === 'darwin' && process.version.startsWith('v22')
+// These tests are currently broken on some node versions
+const skip = process.platform === 'darwin' && semver.satisfies(process.version, '>=20.16.0 <22.10.0')
 
 test('watch', { skip }, async (t) => {
   const { strictEqual, completed, match } = tspl(t, { plan: 3 })
