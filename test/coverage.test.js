@@ -22,7 +22,7 @@ test('coverage', async () => {
 test('coverage excludes', async () => {
   const res = await execa('node', [
     borp,
-    '--coverage',
+    '-C',
     '--coverage-exclude=src'
   ], {
     cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
