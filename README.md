@@ -27,6 +27,9 @@ borp --reporter foo:stderr
 
 # with a local custom reporter
 borp --reporter ./lib/some-reporter.mjs
+
+# matching all test.js files except ones in nested node_modules directories
+borp 'test/**/*.test.js' '!test/**/node_modules/**/*.test.js'
 ```
 
 Borp will automatically run all tests files matching `*.test.{js|ts}`.
@@ -137,6 +140,9 @@ full path to some yaml file.
 The current supported options are:
 
 + `files` (string[]): An array of test files to include. Globs are supported.
+  Note: any glob that starts with a `!` (bang character) will be treated as
+  an ignore glob, e.g. `'!test/**/node_modules/**/*'` will ignore all files
+  in nested `node_modules` directories that would otherwise be matched.
 + `reporters` (string[]): An array of reporters to use. May be relative path
 strings, or module name strings.
 

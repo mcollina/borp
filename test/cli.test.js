@@ -112,7 +112,24 @@ test('interprets globs for files', async () => {
     cwd
   })
 
-  strictEqual(stdout.indexOf('tests 2') >= 0, true)
+  strictEqual(stdout.indexOf('✔ add') >= 0, true)
+  strictEqual(stdout.indexOf('✔ add2') >= 0, true)
+  strictEqual(stdout.indexOf('✔ a thing'), -1)
+})
+
+test('interprets globs for files with an ignore rule', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'files-glob')
+  const { stdout } = await execa('node', [
+    borp,
+    '\'**/*.test.js\'',
+    '\'!test1/**/node_modules/**/*\''
+  ], {
+    cwd
+  })
+
+  strictEqual(stdout.indexOf('✔ add') >= 0, true)
+  strictEqual(stdout.indexOf('✔ add2') >= 0, true)
+  strictEqual(stdout.indexOf('✔ a thing'), -1)
 })
 
 test('Post compile script should be executed when --post-compile  is sent with esm', async () => {
