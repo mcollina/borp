@@ -34,7 +34,7 @@ const args = parseArgs({
     only: { type: 'boolean', short: 'o' },
     watch: { type: 'boolean', short: 'w' },
     pattern: { type: 'string', short: 'p' },
-    concurrency: { type: 'string', short: 'c', default: os.availableParallelism() - 1 + '' },
+    concurrency: { type: 'string', short: 'c', default: (os.availableParallelism() - 1 || 1) + '' },
     coverage: { type: 'boolean', short: 'C' },
     timeout: { type: 'string', short: 't', default: '30000' },
     'no-timeout': { type: 'boolean' },
