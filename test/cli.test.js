@@ -236,15 +236,6 @@ test('invalid option shows help text', async () => {
 
 test('multiple invalid options show help text', async () => {
   console.log('[DEBUG] Starting multiple invalid options test')
-
-  // Skip this specific test on Windows due to Node.js/Windows process handling issue
-  // The core functionality is already tested by other invalid option tests
-  if (process.platform === 'win32') {
-    console.log('[DEBUG] Skipping multiple invalid options test on Windows due to known Node.js process hang issue')
-    console.log('[DEBUG] Core functionality already covered by single invalid option tests')
-    return
-  }
-
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
   console.log('[DEBUG] Test CWD:', testCwd)
 
@@ -253,7 +244,7 @@ test('multiple invalid options show help text', async () => {
     const result = await execa('node', [borp, '--foo', '--bar'], {
       cwd: testCwd,
       timeout: 15000,
-      windowsHide: process.platform === 'win32'
+      windowsHide: false
     })
     console.log('[DEBUG] Unexpected success:', result)
     throw new Error('Expected command to fail')
