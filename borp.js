@@ -23,45 +23,89 @@ process.on('unhandledRejection', (err) => {
   process.exit(1)
 })
 
+function showHelp () {
+  console.log(`Usage: borp [options] [files...]
+
+Options:
+  -h, --help                  Show this help message
+  -o, --only                  Only run tests with the 'only' option set
+  -w, --watch                 Re-run tests on changes
+  -p, --pattern <pattern>     Run tests matching the given glob pattern
+  -c, --concurrency <num>     Set number of concurrent tests (default: ${os.availableParallelism() - 1 || 1})
+  -C, --coverage              Enable code coverage
+  -t, --timeout <ms>          Set test timeout in milliseconds (default: 30000)
+      --no-timeout            Disable test timeout
+  -X, --coverage-exclude      Exclude patterns from coverage (can be used multiple times)
+  -i, --ignore <pattern>      Ignore glob pattern (can be used multiple times)
+      --expose-gc             Expose the gc() function to tests
+  -T, --no-typescript         Disable automatic TypeScript compilation
+  -P, --post-compile <file>   Execute file after TypeScript compilation
+  -r, --reporter <name>       Set reporter (can be used multiple times, default: spec)
+      --check-coverage        Enable coverage threshold checking
+      --lines <threshold>     Set lines coverage threshold (default: 100)
+      --branches <threshold>  Set branches coverage threshold (default: 100)
+      --functions <threshold> Set functions coverage threshold (default: 100)
+      --statements <threshold> Set statements coverage threshold (default: 100)
+
+Examples:
+  borp                               # Run all tests
+  borp --coverage                    # Run tests with coverage
+  borp --watch                       # Run tests in watch mode
+  borp test/specific.test.js         # Run specific test file
+  borp --reporter tap --reporter gh  # Use multiple reporters`)
+}
+
 const foundConfig = await loadConfig()
 if (foundConfig.length > 0) {
   Array.prototype.push.apply(process.argv, foundConfig)
 }
 
-const args = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    only: { type: 'boolean', short: 'o' },
-    watch: { type: 'boolean', short: 'w' },
-    pattern: { type: 'string', short: 'p' },
-    concurrency: { type: 'string', short: 'c', default: (os.availableParallelism() - 1 || 1) + '' },
-    coverage: { type: 'boolean', short: 'C' },
-    timeout: { type: 'string', short: 't', default: '30000' },
-    'no-timeout': { type: 'boolean' },
-    'coverage-exclude': { type: 'string', short: 'X', multiple: true },
-    ignore: { type: 'string', short: 'i', multiple: true },
-    'expose-gc': { type: 'boolean' },
-    help: { type: 'boolean', short: 'h' },
-    'no-typescript': { type: 'boolean', short: 'T' },
-    'post-compile': { type: 'string', short: 'P' },
-    reporter: {
-      type: 'string',
-      short: 'r',
-      default: ['spec'],
-      multiple: true
-    },
-    'check-coverage': { type: 'boolean' },
-    lines: { type: 'string', default: '100' },
-    branches: { type: 'string', default: '100' },
-    functions: { type: 'string', default: '100' },
-    statements: { type: 'string', default: '100' }
+const optionsConfig = {
+  only: { type: 'boolean', short: 'o' },
+  watch: { type: 'boolean', short: 'w' },
+  pattern: { type: 'string', short: 'p' },
+  concurrency: { type: 'string', short: 'c', default: (os.availableParallelism() - 1 || 1) + '' },
+  coverage: { type: 'boolean', short: 'C' },
+  timeout: { type: 'string', short: 't', default: '30000' },
+  'no-timeout': { type: 'boolean' },
+  'coverage-exclude': { type: 'string', short: 'X', multiple: true },
+  ignore: { type: 'string', short: 'i', multiple: true },
+  'expose-gc': { type: 'boolean' },
+  help: { type: 'boolean', short: 'h' },
+  'no-typescript': { type: 'boolean', short: 'T' },
+  'post-compile': { type: 'string', short: 'P' },
+  reporter: {
+    type: 'string',
+    short: 'r',
+    default: ['spec'],
+    multiple: true
   },
-  allowPositionals: true
-})
+  'check-coverage': { type: 'boolean' },
+  lines: { type: 'string', default: '100' },
+  branches: { type: 'string', default: '100' },
+  functions: { type: 'string', default: '100' },
+  statements: { type: 'string', default: '100' }
+}
 
-/* c8 ignore next 5 */
+let args
+try {
+  args = parseArgs({
+    args: process.argv.slice(2),
+    options: optionsConfig,
+    allowPositionals: true
+  })
+} catch (error) {
+  if (error.code === 'ERR_PARSE_ARGS_UNKNOWN_OPTION') {
+    console.error(`Error: ${error.message}\n`)
+    showHelp()
+    process.exit(1)
+  }
+  throw error
+}
+
+/* c8 ignore next 4 */
 if (args.values.help) {
-  console.log(await readFile(new URL('./README.md', import.meta.url), 'utf8'))
+  showHelp()
   process.exit(0)
 }
 
