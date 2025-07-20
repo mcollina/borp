@@ -97,7 +97,11 @@ try {
 } catch (error) {
   if (error.code === 'ERR_PARSE_ARGS_UNKNOWN_OPTION') {
     console.error(`Error: ${error.message}\n`)
+    // Send help to stderr when showing error
+    const originalConsoleLog = console.log
+    console.log = console.error
     showHelp()
+    console.log = originalConsoleLog
     process.exit(1)
   }
   throw error
