@@ -32,7 +32,7 @@ test('limit concurrency', async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
   console.log('CLI TEST DEBUG: limit concurrency - cwd:', testCwd)
   console.log('CLI TEST DEBUG: limit concurrency - starting execa')
-  
+
   let subprocess
   try {
     subprocess = execa('node', [
@@ -46,7 +46,7 @@ test('limit concurrency', async () => {
       killSignal: 'SIGTERM'
     })
     activeSubprocesses.add(subprocess)
-    
+
     const result = await subprocess
     activeSubprocesses.delete(subprocess)
     console.log('CLI TEST DEBUG: limit concurrency - success')
@@ -70,7 +70,7 @@ test('failing test set correct status code', async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'fails')
   console.log('CLI TEST DEBUG: failing test - cwd:', testCwd)
   console.log('CLI TEST DEBUG: failing test - starting execa')
-  
+
   // execa rejects if status code is not 0
   let subprocess
   try {
@@ -83,7 +83,7 @@ test('failing test set correct status code', async () => {
       killSignal: 'SIGTERM'
     })
     activeSubprocesses.add(subprocess)
-    
+
     await rejects(subprocess)
     activeSubprocesses.delete(subprocess)
     console.log('CLI TEST DEBUG: failing test - success (expected rejection)')
@@ -102,7 +102,7 @@ test('--expose-gc flag enables garbage collection in tests', async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'gc')
   console.log('CLI TEST DEBUG: expose-gc - cwd:', testCwd)
   console.log('CLI TEST DEBUG: expose-gc - starting execa')
-  
+
   try {
     await execa('node', [
       borp,
@@ -125,7 +125,7 @@ test('failing test with --expose-gc flag sets correct status code', async () => 
   const testCwd = join(import.meta.url, '..', 'fixtures', 'fails')
   console.log('CLI TEST DEBUG: failing expose-gc - cwd:', testCwd)
   console.log('CLI TEST DEBUG: failing expose-gc - starting execa')
-  
+
   // execa rejects if status code is not 0
   let subprocess
   try {
@@ -138,7 +138,7 @@ test('failing test with --expose-gc flag sets correct status code', async () => 
       cleanup: true,
       killSignal: 'SIGTERM'
     })
-    
+
     await rejects(subprocess)
     console.log('CLI TEST DEBUG: failing expose-gc - success (expected rejection)')
   } catch (error) {
@@ -155,11 +155,11 @@ test('disable ts and run no tests', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm2')
   console.log('CLI TEST DEBUG: disable ts - cwd:', cwd)
   console.log('CLI TEST DEBUG: disable ts - removing dist directory')
-  
+
   try {
     await rm(path.join(cwd, 'dist'), { recursive: true, force: true })
     console.log('CLI TEST DEBUG: disable ts - dist directory removed')
-    
+
     console.log('CLI TEST DEBUG: disable ts - starting execa')
     const { stdout } = await execa('node', [
       borp,
@@ -227,14 +227,14 @@ test('interprets globs for files', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'files-glob')
   console.log('CLI TEST DEBUG: glob files - cwd:', cwd)
   console.log('CLI TEST DEBUG: glob files - platform:', process.platform)
-  
+
   const args = [
     borp,
     '\'test1/*.test.js\'',
     '\'test2/**/*.test.js\''
   ]
   console.log('CLI TEST DEBUG: glob files - args:', args)
-  
+
   try {
     console.log('CLI TEST DEBUG: glob files - starting execa')
     const { stdout } = await execa('node', args, {
@@ -248,7 +248,7 @@ test('interprets globs for files', async () => {
     console.log('CLI TEST DEBUG: glob files - add found:', stdout.indexOf('✔ add') >= 0)
     console.log('CLI TEST DEBUG: glob files - add2 found:', stdout.indexOf('✔ add2') >= 0)
     console.log('CLI TEST DEBUG: glob files - a thing found:', stdout.indexOf('✔ a thing') >= 0)
-    
+
     strictEqual(stdout.indexOf('✔ add') >= 0, true)
     strictEqual(stdout.indexOf('✔ add2') >= 0, true)
     strictEqual(stdout.indexOf('✔ a thing'), -1)
@@ -267,14 +267,14 @@ test('interprets globs for files with an ignore rule', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'files-glob')
   console.log('CLI TEST DEBUG: glob ignore - cwd:', cwd)
   console.log('CLI TEST DEBUG: glob ignore - platform:', process.platform)
-  
+
   const args = [
     borp,
     '\'**/*.test.js\'',
     '\'!test1/**/node_modules/**/*\''
   ]
   console.log('CLI TEST DEBUG: glob ignore - args:', args)
-  
+
   try {
     console.log('CLI TEST DEBUG: glob ignore - starting execa')
     const { stdout } = await execa('node', args, {
@@ -287,7 +287,7 @@ test('interprets globs for files with an ignore rule', async () => {
     console.log('CLI TEST DEBUG: glob ignore - add found:', stdout.indexOf('✔ add') >= 0)
     console.log('CLI TEST DEBUG: glob ignore - add2 found:', stdout.indexOf('✔ add2') >= 0)
     console.log('CLI TEST DEBUG: glob ignore - a thing found:', stdout.indexOf('✔ a thing') >= 0)
-    
+
     strictEqual(stdout.indexOf('✔ add') >= 0, true)
     strictEqual(stdout.indexOf('✔ add2') >= 0, true)
     strictEqual(stdout.indexOf('✔ a thing'), -1)
