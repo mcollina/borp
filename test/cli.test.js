@@ -405,7 +405,7 @@ test('invalid option shows help text', async () => {
   console.log('[DEBUG] Test completed successfully')
 })
 
-test.skip('multiple invalid options show help text', async () => {
+test('multiple invalid options show help text', async () => {
   console.log('[DEBUG] Starting multiple invalid options test')
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
   console.log('[DEBUG] Test CWD:', testCwd)
