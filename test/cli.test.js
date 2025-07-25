@@ -7,34 +7,81 @@ import path from 'node:path'
 
 const borp = join(import.meta.url, '..', 'borp.js')
 
+console.log('CLI TEST DEBUG: Platform:', process.platform)
+console.log('CLI TEST DEBUG: Node version:', process.version)
+console.log('CLI TEST DEBUG: borp path:', borp)
+console.log('CLI TEST DEBUG: process.cwd():', process.cwd())
+console.log('CLI TEST DEBUG: import.meta.url:', import.meta.url)
+
 delete process.env.GITHUB_ACTION
 
 test('limit concurrency', async () => {
-  await execa('node', [
-    borp,
-    '--concurrency',
-    '1'
-  ], {
-    cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
-  })
+  const testCwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
+  console.log('CLI TEST DEBUG: limit concurrency - cwd:', testCwd)
+  console.log('CLI TEST DEBUG: limit concurrency - starting execa')
+  
+  try {
+    const result = await execa('node', [
+      borp,
+      '--concurrency',
+      '1'
+    ], {
+      cwd: testCwd,
+      timeout: 30000 // 30 second timeout
+    })
+    console.log('CLI TEST DEBUG: limit concurrency - success')
+    console.log('CLI TEST DEBUG: limit concurrency - stdout:', result.stdout.substring(0, 200))
+  } catch (error) {
+    console.log('CLI TEST DEBUG: limit concurrency - error:', error.message)
+    console.log('CLI TEST DEBUG: limit concurrency - error code:', error.exitCode)
+    console.log('CLI TEST DEBUG: limit concurrency - error signal:', error.signal)
+    if (error.stdout) console.log('CLI TEST DEBUG: limit concurrency - error stdout:', error.stdout.substring(0, 200))
+    if (error.stderr) console.log('CLI TEST DEBUG: limit concurrency - error stderr:', error.stderr.substring(0, 200))
+    throw error
+  }
 })
 
 test('failing test set correct status code', async () => {
+  const testCwd = join(import.meta.url, '..', 'fixtures', 'fails')
+  console.log('CLI TEST DEBUG: failing test - cwd:', testCwd)
+  console.log('CLI TEST DEBUG: failing test - starting execa')
+  
   // execa rejects if status code is not 0
-  await rejects(execa('node', [
-    borp
-  ], {
-    cwd: join(import.meta.url, '..', 'fixtures', 'fails')
-  }))
+  try {
+    await rejects(execa('node', [
+      borp
+    ], {
+      cwd: testCwd,
+      timeout: 30000
+    }))
+    console.log('CLI TEST DEBUG: failing test - success (expected rejection)')
+  } catch (error) {
+    console.log('CLI TEST DEBUG: failing test - unexpected error:', error.message)
+    throw error
+  }
 })
 
 test('--expose-gc flag enables garbage collection in tests', async () => {
-  await execa('node', [
-    borp,
-    '--expose-gc'
-  ], {
-    cwd: join(import.meta.url, '..', 'fixtures', 'gc')
-  })
+  const testCwd = join(import.meta.url, '..', 'fixtures', 'gc')
+  console.log('CLI TEST DEBUG: expose-gc - cwd:', testCwd)
+  console.log('CLI TEST DEBUG: expose-gc - starting execa')
+  
+  try {
+    await execa('node', [
+      borp,
+      '--expose-gc'
+    ], {
+      cwd: testCwd,
+      timeout: 45000 // Increase timeout for Windows
+    })
+    console.log('CLI TEST DEBUG: expose-gc - success')
+  } catch (error) {
+    console.log('CLI TEST DEBUG: expose-gc - error:', error.message)
+    console.log('CLI TEST DEBUG: expose-gc - error code:', error.exitCode)
+    if (error.stdout) console.log('CLI TEST DEBUG: expose-gc - error stdout:', error.stdout.substring(0, 200))
+    if (error.stderr) console.log('CLI TEST DEBUG: expose-gc - error stderr:', error.stderr.substring(0, 200))
+    throw error
+  }
 })
 
 test('failing test with --expose-gc flag sets correct status code', async () => {
@@ -49,16 +96,33 @@ test('failing test with --expose-gc flag sets correct status code', async () => 
 
 test('disable ts and run no tests', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm2')
-  await rm(path.join(cwd, 'dist'), { recursive: true, force: true })
-  const { stdout } = await execa('node', [
-    borp,
-    '--reporter=spec',
-    '--no-typescript'
-  ], {
-    cwd
-  })
+  console.log('CLI TEST DEBUG: disable ts - cwd:', cwd)
+  console.log('CLI TEST DEBUG: disable ts - removing dist directory')
+  
+  try {
+    await rm(path.join(cwd, 'dist'), { recursive: true, force: true })
+    console.log('CLI TEST DEBUG: disable ts - dist directory removed')
+    
+    console.log('CLI TEST DEBUG: disable ts - starting execa')
+    const { stdout } = await execa('node', [
+      borp,
+      '--reporter=spec',
+      '--no-typescript'
+    ], {
+      cwd,
+      timeout: 30000
+    })
 
-  strictEqual(stdout.indexOf('tests 0') >= 0, true)
+    console.log('CLI TEST DEBUG: disable ts - stdout:', stdout.substring(0, 300))
+    strictEqual(stdout.indexOf('tests 0') >= 0, true)
+    console.log('CLI TEST DEBUG: disable ts - success')
+  } catch (error) {
+    console.log('CLI TEST DEBUG: disable ts - error:', error.message)
+    console.log('CLI TEST DEBUG: disable ts - error code:', error.exitCode)
+    if (error.stdout) console.log('CLI TEST DEBUG: disable ts - error stdout:', error.stdout.substring(0, 200))
+    if (error.stderr) console.log('CLI TEST DEBUG: disable ts - error stderr:', error.stderr.substring(0, 200))
+    throw error
+  }
 })
 
 test('reporter from node_modules', async () => {
@@ -104,32 +168,81 @@ test('gh reporter', async () => {
 
 test('interprets globs for files', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'files-glob')
-  const { stdout } = await execa('node', [
+  console.log('CLI TEST DEBUG: glob files - cwd:', cwd)
+  console.log('CLI TEST DEBUG: glob files - platform:', process.platform)
+  
+  const args = [
     borp,
     '\'test1/*.test.js\'',
     '\'test2/**/*.test.js\''
-  ], {
-    cwd
-  })
+  ]
+  console.log('CLI TEST DEBUG: glob files - args:', args)
+  
+  try {
+    console.log('CLI TEST DEBUG: glob files - starting execa')
+    const { stdout } = await execa('node', args, {
+      cwd,
+      timeout: 60000, // Increase timeout for potential Windows slowness
+      shell: process.platform === 'win32' // Use shell on Windows for glob handling
+    })
 
-  strictEqual(stdout.indexOf('✔ add') >= 0, true)
-  strictEqual(stdout.indexOf('✔ add2') >= 0, true)
-  strictEqual(stdout.indexOf('✔ a thing'), -1)
+    console.log('CLI TEST DEBUG: glob files - stdout:', stdout.substring(0, 500))
+    console.log('CLI TEST DEBUG: glob files - checking for add')
+    console.log('CLI TEST DEBUG: glob files - add found:', stdout.indexOf('✔ add') >= 0)
+    console.log('CLI TEST DEBUG: glob files - add2 found:', stdout.indexOf('✔ add2') >= 0)
+    console.log('CLI TEST DEBUG: glob files - a thing found:', stdout.indexOf('✔ a thing') >= 0)
+    
+    strictEqual(stdout.indexOf('✔ add') >= 0, true)
+    strictEqual(stdout.indexOf('✔ add2') >= 0, true)
+    strictEqual(stdout.indexOf('✔ a thing'), -1)
+    console.log('CLI TEST DEBUG: glob files - success')
+  } catch (error) {
+    console.log('CLI TEST DEBUG: glob files - error:', error.message)
+    console.log('CLI TEST DEBUG: glob files - error code:', error.exitCode)
+    console.log('CLI TEST DEBUG: glob files - error signal:', error.signal)
+    if (error.stdout) console.log('CLI TEST DEBUG: glob files - error stdout:', error.stdout.substring(0, 500))
+    if (error.stderr) console.log('CLI TEST DEBUG: glob files - error stderr:', error.stderr.substring(0, 500))
+    throw error
+  }
 })
 
 test('interprets globs for files with an ignore rule', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'files-glob')
-  const { stdout } = await execa('node', [
+  console.log('CLI TEST DEBUG: glob ignore - cwd:', cwd)
+  console.log('CLI TEST DEBUG: glob ignore - platform:', process.platform)
+  
+  const args = [
     borp,
     '\'**/*.test.js\'',
     '\'!test1/**/node_modules/**/*\''
-  ], {
-    cwd
-  })
+  ]
+  console.log('CLI TEST DEBUG: glob ignore - args:', args)
+  
+  try {
+    console.log('CLI TEST DEBUG: glob ignore - starting execa')
+    const { stdout } = await execa('node', args, {
+      cwd,
+      timeout: 60000, // Increase timeout for potential Windows slowness
+      shell: process.platform === 'win32' // Use shell on Windows for glob handling
+    })
 
-  strictEqual(stdout.indexOf('✔ add') >= 0, true)
-  strictEqual(stdout.indexOf('✔ add2') >= 0, true)
-  strictEqual(stdout.indexOf('✔ a thing'), -1)
+    console.log('CLI TEST DEBUG: glob ignore - stdout:', stdout.substring(0, 500))
+    console.log('CLI TEST DEBUG: glob ignore - add found:', stdout.indexOf('✔ add') >= 0)
+    console.log('CLI TEST DEBUG: glob ignore - add2 found:', stdout.indexOf('✔ add2') >= 0)
+    console.log('CLI TEST DEBUG: glob ignore - a thing found:', stdout.indexOf('✔ a thing') >= 0)
+    
+    strictEqual(stdout.indexOf('✔ add') >= 0, true)
+    strictEqual(stdout.indexOf('✔ add2') >= 0, true)
+    strictEqual(stdout.indexOf('✔ a thing'), -1)
+    console.log('CLI TEST DEBUG: glob ignore - success')
+  } catch (error) {
+    console.log('CLI TEST DEBUG: glob ignore - error:', error.message)
+    console.log('CLI TEST DEBUG: glob ignore - error code:', error.exitCode)
+    console.log('CLI TEST DEBUG: glob ignore - error signal:', error.signal)
+    if (error.stdout) console.log('CLI TEST DEBUG: glob ignore - error stdout:', error.stdout.substring(0, 500))
+    if (error.stderr) console.log('CLI TEST DEBUG: glob ignore - error stderr:', error.stderr.substring(0, 500))
+    throw error
+  }
 })
 
 test('Post compile script should be executed when --post-compile  is sent with esm', async () => {
