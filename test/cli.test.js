@@ -478,18 +478,46 @@ test('--help option shows help text and exits successfully', async () => {
   console.log('[DEBUG] Test CWD:', testCwd)
 
   const startTime = Date.now()
-  const { stdout, exitCode } = await execa('node', [borp, '--help'], {
-    cwd: testCwd,
-    timeout: 15000,
-    windowsHide: process.platform === 'win32'
-  })
-  const elapsed = Date.now() - startTime
+  let subprocess
+  let result
 
-  console.log(`[DEBUG] --help completed after ${elapsed}ms:`, {
-    exitCode,
-    stdoutLength: stdout?.length,
-    stdoutPreview: stdout?.substring(0, 100) + '...'
-  })
+  try {
+    subprocess = execa('node', [borp, '--help'], {
+      cwd: testCwd,
+      timeout: 10000, // Reduce timeout to 10s
+      windowsHide: process.platform === 'win32',
+      cleanup: true,
+      killSignal: 'SIGTERM'
+    })
+    activeSubprocesses.add(subprocess)
+    console.log('[DEBUG] --help subprocess started')
+
+    result = await subprocess
+    activeSubprocesses.delete(subprocess)
+    const elapsed = Date.now() - startTime
+
+    console.log(`[DEBUG] --help completed after ${elapsed}ms:`, {
+      exitCode: result.exitCode,
+      stdoutLength: result.stdout?.length,
+      stdoutPreview: result.stdout?.substring(0, 100) + '...'
+    })
+  } catch (error) {
+    if (subprocess) activeSubprocesses.delete(subprocess)
+    const elapsed = Date.now() - startTime
+    console.log(`[DEBUG] --help failed after ${elapsed}ms:`, {
+      message: error.message,
+      exitCode: error.exitCode,
+      timedOut: error.timedOut,
+      signal: error.signal
+    })
+    if (subprocess && !subprocess.killed) {
+      console.log('[DEBUG] Killing --help subprocess')
+      subprocess.kill('SIGKILL')
+    }
+    throw error
+  }
+
+  const { stdout, exitCode } = result
 
   strictEqual(exitCode, 0, 'Should exit with code 0')
 
@@ -522,18 +550,46 @@ test('-h option shows help text and exits successfully', async () => {
   console.log('[DEBUG] Test CWD:', testCwd)
 
   const startTime = Date.now()
-  const { stdout, exitCode } = await execa('node', [borp, '-h'], {
-    cwd: testCwd,
-    timeout: 15000,
-    windowsHide: process.platform === 'win32'
-  })
-  const elapsed = Date.now() - startTime
+  let subprocess
+  let result
 
-  console.log(`[DEBUG] -h completed after ${elapsed}ms:`, {
-    exitCode,
-    stdoutLength: stdout?.length,
-    stdoutPreview: stdout?.substring(0, 100) + '...'
-  })
+  try {
+    subprocess = execa('node', [borp, '-h'], {
+      cwd: testCwd,
+      timeout: 10000, // Reduce timeout to 10s
+      windowsHide: process.platform === 'win32',
+      cleanup: true,
+      killSignal: 'SIGTERM'
+    })
+    activeSubprocesses.add(subprocess)
+    console.log('[DEBUG] -h subprocess started')
+
+    result = await subprocess
+    activeSubprocesses.delete(subprocess)
+    const elapsed = Date.now() - startTime
+
+    console.log(`[DEBUG] -h completed after ${elapsed}ms:`, {
+      exitCode: result.exitCode,
+      stdoutLength: result.stdout?.length,
+      stdoutPreview: result.stdout?.substring(0, 100) + '...'
+    })
+  } catch (error) {
+    if (subprocess) activeSubprocesses.delete(subprocess)
+    const elapsed = Date.now() - startTime
+    console.log(`[DEBUG] -h failed after ${elapsed}ms:`, {
+      message: error.message,
+      exitCode: error.exitCode,
+      timedOut: error.timedOut,
+      signal: error.signal
+    })
+    if (subprocess && !subprocess.killed) {
+      console.log('[DEBUG] Killing -h subprocess')
+      subprocess.kill('SIGKILL')
+    }
+    throw error
+  }
+
+  const { stdout, exitCode } = result
 
   strictEqual(exitCode, 0, 'Should exit with code 0')
 
