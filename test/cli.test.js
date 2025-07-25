@@ -161,7 +161,7 @@ test('failing test with --expose-gc flag sets correct status code', async () => 
   }
 })
 
-test.skip('disable ts and run no tests', async () => {
+test('disable ts and run no tests', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm2')
   console.log('CLI TEST DEBUG: disable ts - cwd:', cwd)
   console.log('CLI TEST DEBUG: disable ts - removing dist directory')
