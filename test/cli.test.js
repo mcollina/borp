@@ -233,7 +233,7 @@ test('gh reporter', async () => {
   strictEqual(stdout.indexOf('::notice') >= 0, true)
 })
 
-test.skip('interprets globs for files', async () => {
+test('interprets globs for files', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'files-glob')
   console.log('CLI TEST DEBUG: glob files - cwd:', cwd)
   console.log('CLI TEST DEBUG: glob files - platform:', process.platform)
