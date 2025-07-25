@@ -335,7 +335,7 @@ test('Post compile script should be executed when --post-compile  is sent with c
   strictEqual(stdout.indexOf('Post compile hook complete') >= 0, true, 'Post compile message should be found in stdout')
 })
 
-test.skip('invalid option shows help text', async () => {
+test('invalid option shows help text', async () => {
   console.log('[DEBUG] Starting invalid option test')
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
   console.log('[DEBUG] Test CWD:', testCwd)
