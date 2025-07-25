@@ -312,7 +312,7 @@ test('interprets globs for files with an ignore rule', async () => {
   }
 })
 
-test.skip('Post compile script should be executed when --post-compile  is sent with esm', async () => {
+test('Post compile script should be executed when --post-compile  is sent with esm', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm-post-compile')
   const { stdout } = await execa('node', [
     borp,
