@@ -13,6 +13,19 @@ console.log('CLI TEST DEBUG: borp path:', borp)
 console.log('CLI TEST DEBUG: process.cwd():', process.cwd())
 console.log('CLI TEST DEBUG: import.meta.url:', import.meta.url)
 
+// Track subprocesses for cleanup
+const activeSubprocesses = new Set()
+
+// Global cleanup handler
+process.on('exit', () => {
+  console.log('CLI TEST DEBUG: Process exiting, cleaning up', activeSubprocesses.size, 'subprocesses')
+  for (const subprocess of activeSubprocesses) {
+    if (subprocess && !subprocess.killed) {
+      subprocess.kill('SIGKILL')
+    }
+  }
+})
+
 delete process.env.GITHUB_ACTION
 
 test('limit concurrency', async () => {
@@ -20,23 +33,35 @@ test('limit concurrency', async () => {
   console.log('CLI TEST DEBUG: limit concurrency - cwd:', testCwd)
   console.log('CLI TEST DEBUG: limit concurrency - starting execa')
   
+  let subprocess
   try {
-    const result = await execa('node', [
+    subprocess = execa('node', [
       borp,
       '--concurrency',
       '1'
     ], {
       cwd: testCwd,
-      timeout: 30000 // 30 second timeout
+      timeout: 30000,
+      cleanup: true,
+      killSignal: 'SIGTERM'
     })
+    activeSubprocesses.add(subprocess)
+    
+    const result = await subprocess
+    activeSubprocesses.delete(subprocess)
     console.log('CLI TEST DEBUG: limit concurrency - success')
     console.log('CLI TEST DEBUG: limit concurrency - stdout:', result.stdout.substring(0, 200))
   } catch (error) {
+    if (subprocess) activeSubprocesses.delete(subprocess)
     console.log('CLI TEST DEBUG: limit concurrency - error:', error.message)
     console.log('CLI TEST DEBUG: limit concurrency - error code:', error.exitCode)
     console.log('CLI TEST DEBUG: limit concurrency - error signal:', error.signal)
     if (error.stdout) console.log('CLI TEST DEBUG: limit concurrency - error stdout:', error.stdout.substring(0, 200))
     if (error.stderr) console.log('CLI TEST DEBUG: limit concurrency - error stderr:', error.stderr.substring(0, 200))
+    if (subprocess && !subprocess.killed) {
+      console.log('CLI TEST DEBUG: limit concurrency - killing subprocess')
+      subprocess.kill('SIGKILL')
+    }
     throw error
   }
 })
@@ -47,16 +72,28 @@ test('failing test set correct status code', async () => {
   console.log('CLI TEST DEBUG: failing test - starting execa')
   
   // execa rejects if status code is not 0
+  let subprocess
   try {
-    await rejects(execa('node', [
+    subprocess = execa('node', [
       borp
     ], {
       cwd: testCwd,
-      timeout: 30000
-    }))
+      timeout: 30000,
+      cleanup: true,
+      killSignal: 'SIGTERM'
+    })
+    activeSubprocesses.add(subprocess)
+    
+    await rejects(subprocess)
+    activeSubprocesses.delete(subprocess)
     console.log('CLI TEST DEBUG: failing test - success (expected rejection)')
   } catch (error) {
+    if (subprocess) activeSubprocesses.delete(subprocess)
     console.log('CLI TEST DEBUG: failing test - unexpected error:', error.message)
+    if (subprocess && !subprocess.killed) {
+      console.log('CLI TEST DEBUG: failing test - killing subprocess')
+      subprocess.kill('SIGKILL')
+    }
     throw error
   }
 })
@@ -85,13 +122,33 @@ test('--expose-gc flag enables garbage collection in tests', async () => {
 })
 
 test('failing test with --expose-gc flag sets correct status code', async () => {
+  const testCwd = join(import.meta.url, '..', 'fixtures', 'fails')
+  console.log('CLI TEST DEBUG: failing expose-gc - cwd:', testCwd)
+  console.log('CLI TEST DEBUG: failing expose-gc - starting execa')
+  
   // execa rejects if status code is not 0
-  await rejects(execa('node', [
-    borp,
-    '--expose-gc'
-  ], {
-    cwd: join(import.meta.url, '..', 'fixtures', 'fails')
-  }))
+  let subprocess
+  try {
+    subprocess = execa('node', [
+      borp,
+      '--expose-gc'
+    ], {
+      cwd: testCwd,
+      timeout: 30000,
+      cleanup: true,
+      killSignal: 'SIGTERM'
+    })
+    
+    await rejects(subprocess)
+    console.log('CLI TEST DEBUG: failing expose-gc - success (expected rejection)')
+  } catch (error) {
+    console.log('CLI TEST DEBUG: failing expose-gc - unexpected error:', error.message)
+    if (subprocess && !subprocess.killed) {
+      console.log('CLI TEST DEBUG: failing expose-gc - killing subprocess')
+      subprocess.kill('SIGKILL')
+    }
+    throw error
+  }
 })
 
 test('disable ts and run no tests', async () => {
