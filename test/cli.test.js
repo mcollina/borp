@@ -192,7 +192,7 @@ test('disable ts and run no tests', async () => {
   }
 })
 
-test.skip('reporter from node_modules', async () => {
+test('reporter from node_modules', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
   const { stdout } = await execa('node', [
     borp,
@@ -205,7 +205,7 @@ test.skip('reporter from node_modules', async () => {
   strictEqual(stdout.indexOf('tests 2') >= 0, true)
 })
 
-test.skip('reporter from relative path', async () => {
+test('reporter from relative path', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'relative-reporter')
   const { stdout } = await execa('node', [
     borp,
