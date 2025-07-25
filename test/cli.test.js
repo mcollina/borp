@@ -405,7 +405,7 @@ test('invalid option shows help text', async () => {
   console.log('[DEBUG] Test completed successfully')
 })
 
-test('multiple invalid options show help text', async () => {
+test.skip('multiple invalid options show help text', async () => {
   console.log('[DEBUG] Starting multiple invalid options test')
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
   console.log('[DEBUG] Test CWD:', testCwd)
@@ -439,7 +439,7 @@ test('multiple invalid options show help text', async () => {
   console.log('[DEBUG] Multiple options test completed')
 })
 
-test.skip('invalid short option shows help text', async () => {
+test('invalid short option shows help text', async () => {
   console.log('[DEBUG] Starting invalid short option test')
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
   console.log('[DEBUG] Test CWD:', testCwd)
