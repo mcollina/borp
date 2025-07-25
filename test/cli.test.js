@@ -273,7 +273,7 @@ test('interprets globs for files', async () => {
   }
 })
 
-test.skip('interprets globs for files with an ignore rule', async () => {
+test('interprets globs for files with an ignore rule', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'files-glob')
   console.log('CLI TEST DEBUG: glob ignore - cwd:', cwd)
   console.log('CLI TEST DEBUG: glob ignore - platform:', process.platform)
