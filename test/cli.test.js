@@ -324,7 +324,7 @@ test('Post compile script should be executed when --post-compile  is sent with e
   strictEqual(stdout.indexOf('Post compile hook complete') >= 0, true, 'Post compile message should be found in stdout')
 })
 
-test.skip('Post compile script should be executed when --post-compile  is sent with cjs', async () => {
+test('Post compile script should be executed when --post-compile  is sent with cjs', async () => {
   const { stdout } = await execa('node', [
     borp,
     '--post-compile=postCompile.ts'
