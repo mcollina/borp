@@ -218,7 +218,7 @@ test('reporter from relative path', async () => {
   strictEqual(/passed:.+add2\.test\.js/.test(stdout), true)
 })
 
-test.skip('gh reporter', async () => {
+test('gh reporter', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
   const { stdout } = await execa('node', [
     borp,
