@@ -76,7 +76,7 @@ test('limit concurrency', async () => {
   }
 })
 
-test.skip('failing test set correct status code', async () => {
+test('failing test set correct status code', async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'fails')
   console.log('CLI TEST DEBUG: failing test - cwd:', testCwd)
   console.log('CLI TEST DEBUG: failing test - starting execa')
