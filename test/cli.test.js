@@ -108,7 +108,7 @@ test('failing test set correct status code', async () => {
   }
 })
 
-test.skip('--expose-gc flag enables garbage collection in tests', async () => {
+test('--expose-gc flag enables garbage collection in tests', async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'gc')
   console.log('CLI TEST DEBUG: expose-gc - cwd:', testCwd)
   console.log('CLI TEST DEBUG: expose-gc - starting execa')
