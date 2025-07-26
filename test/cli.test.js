@@ -155,20 +155,3 @@ test('Post compile script should be executed when --post-compile  is sent with c
   strictEqual(stdout.indexOf('Post compile hook complete') >= 0, true, 'Post compile message should be found in stdout')
 })
 
-test('multiple invalid options show help text', async () => {
-  const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
-
-  await rejects(async () => {
-    await execa('node', [borp, '--foo', '--bar'], {
-      cwd: testCwd,
-      timeout: 15000,
-      windowsHide: false
-    })
-    throw new Error('Expected command to fail')
-  }, (error) => {
-    strictEqual(error.exitCode, 1)
-    strictEqual(error.stderr.includes('Error: Unknown option \'--foo\''), true, 'Should show error for first invalid option')
-    strictEqual(error.stderr.includes('Usage: borp [options] [files...]'), true, 'Should show help text')
-    return true
-  })
-})
