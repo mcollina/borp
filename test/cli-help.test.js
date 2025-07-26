@@ -5,7 +5,6 @@ import { rejects, strictEqual } from 'node:assert'
 
 const borp = join(import.meta.url, '..', 'borp.js')
 
-
 delete process.env.GITHUB_ACTION
 
 const testFn1 = process.platform === 'win32' ? test.skip : test
@@ -13,7 +12,7 @@ testFn1('multiple invalid options show help text', async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
 
   await rejects(async () => {
-    const result = await execa('node', [borp, '--foo', '--bar'], {
+    await execa('node', [borp, '--foo', '--bar'], {
       cwd: testCwd,
       timeout: 15000
     })
@@ -31,7 +30,7 @@ testFn2('invalid short option shows help text', async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
 
   await rejects(async () => {
-    const result = await execa('node', [borp, '-z'], {
+    await execa('node', [borp, '-z'], {
       cwd: testCwd,
       timeout: 15000
     })

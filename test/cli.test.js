@@ -7,7 +7,6 @@ import path from 'node:path'
 
 const borp = join(import.meta.url, '..', 'borp.js')
 
-
 delete process.env.GITHUB_ACTION
 
 test('limit concurrency', async () => {
@@ -160,7 +159,7 @@ test('invalid option shows help text', async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
 
   await rejects(async () => {
-    const result = await execa('node', [borp, '--invalid-option'], {
+    await execa('node', [borp, '--invalid-option'], {
       cwd: testCwd,
       timeout: 15000,
       windowsHide: process.platform === 'win32'
@@ -181,7 +180,7 @@ test('multiple invalid options show help text', async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
 
   await rejects(async () => {
-    const result = await execa('node', [borp, '--foo', '--bar'], {
+    await execa('node', [borp, '--foo', '--bar'], {
       cwd: testCwd,
       timeout: 15000,
       windowsHide: false
@@ -194,4 +193,3 @@ test('multiple invalid options show help text', async () => {
     return true
   })
 })
-
