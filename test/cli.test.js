@@ -155,26 +155,6 @@ test('Post compile script should be executed when --post-compile  is sent with c
   strictEqual(stdout.indexOf('Post compile hook complete') >= 0, true, 'Post compile message should be found in stdout')
 })
 
-test('invalid option shows help text', async () => {
-  const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
-
-  await rejects(async () => {
-    await execa('node', [borp, '--invalid-option'], {
-      cwd: testCwd,
-      timeout: 15000,
-      windowsHide: process.platform === 'win32'
-    })
-    throw new Error('Expected command to fail')
-  }, (error) => {
-    strictEqual(error.exitCode, 1)
-    strictEqual(error.stderr.includes('Error: Unknown option \'--invalid-option\''), true, 'Should show error message')
-    strictEqual(error.stderr.includes('Usage: borp [options] [files...]'), true, 'Should show usage line')
-    strictEqual(error.stderr.includes('--help'), true, 'Should show help option')
-    strictEqual(error.stderr.includes('--coverage'), true, 'Should show coverage option')
-    strictEqual(error.stderr.includes('Examples:'), true, 'Should show examples section')
-    return true
-  })
-})
 
 test('multiple invalid options show help text', async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')

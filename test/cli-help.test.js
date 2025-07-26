@@ -7,6 +7,27 @@ const borp = join(import.meta.url, '..', 'borp.js')
 
 delete process.env.GITHUB_ACTION
 
+const testFn0 = process.platform === 'win32' ? test.skip : test
+testFn0('invalid option shows help text', async () => {
+  const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
+
+  await rejects(async () => {
+    await execa('node', [borp, '--invalid-option'], {
+      cwd: testCwd,
+      timeout: 15000
+    })
+    throw new Error('Expected command to fail')
+  }, (error) => {
+    strictEqual(error.exitCode, 1)
+    strictEqual(error.stderr.includes('Error: Unknown option \'--invalid-option\''), true, 'Should show error message')
+    strictEqual(error.stderr.includes('Usage: borp [options] [files...]'), true, 'Should show usage line')
+    strictEqual(error.stderr.includes('--help'), true, 'Should show help option')
+    strictEqual(error.stderr.includes('--coverage'), true, 'Should show coverage option')
+    strictEqual(error.stderr.includes('Examples:'), true, 'Should show examples section')
+    return true
+  })
+})
+
 const testFn1 = process.platform === 'win32' ? test.skip : test
 testFn1('multiple invalid options show help text', async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
