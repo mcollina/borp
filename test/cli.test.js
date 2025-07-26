@@ -155,7 +155,6 @@ test('Post compile script should be executed when --post-compile  is sent with c
   strictEqual(stdout.indexOf('Post compile hook complete') >= 0, true, 'Post compile message should be found in stdout')
 })
 
-
 test('multiple invalid options show help text', async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
 
