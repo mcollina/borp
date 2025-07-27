@@ -4,11 +4,11 @@ import { join } from 'desm'
 import { rejects, strictEqual } from 'node:assert'
 
 const borp = join(import.meta.url, '..', 'borp.js')
+const isWindows = process.platform === 'win32'
 
 delete process.env.GITHUB_ACTION
 
-const testFn0 = process.platform === 'win32' ? test.skip : test
-testFn0('invalid option shows help text', async () => {
+test('invalid option shows help text', { skip: isWindows }, async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
 
   await rejects(async () => {
@@ -28,8 +28,7 @@ testFn0('invalid option shows help text', async () => {
   })
 })
 
-const testFn1 = process.platform === 'win32' ? test.skip : test
-testFn1('multiple invalid options show help text', async () => {
+test('multiple invalid options show help text', { skip: isWindows }, async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
 
   await rejects(async () => {
@@ -46,8 +45,7 @@ testFn1('multiple invalid options show help text', async () => {
   })
 })
 
-const testFn2 = process.platform === 'win32' ? test.skip : test
-testFn2('invalid short option shows help text', async () => {
+test('invalid short option shows help text', { skip: isWindows }, async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
 
   await rejects(async () => {
@@ -64,8 +62,7 @@ testFn2('invalid short option shows help text', async () => {
   })
 })
 
-const testFn3 = process.platform === 'win32' ? test.skip : test
-testFn3('--help option shows help text and exits successfully', async () => {
+test('--help option shows help text and exits successfully', { skip: isWindows }, async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
 
   const { stdout, exitCode } = await execa('node', [borp, '--help'], {
@@ -81,8 +78,7 @@ testFn3('--help option shows help text and exits successfully', async () => {
   strictEqual(stdout.includes('borp --coverage'), true, 'Should show coverage example')
 })
 
-const testFn4 = process.platform === 'win32' ? test.skip : test
-testFn4('-h option shows help text and exits successfully', async () => {
+test('-h option shows help text and exits successfully', { skip: isWindows }, async () => {
   const testCwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
 
   const { stdout, exitCode } = await execa('node', [borp, '-h'], {
