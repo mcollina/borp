@@ -21,7 +21,11 @@
   "keywords": [],
   "author": "Matteo Collina <hello@matteocollina.com>",
   "license": "MIT",
+  "pre-commit": [
+    "lint"
+  ],
   "devDependencies": {
+    "@fastify/pre-commit": "^2.2.0",
     "@matteo.collina/tspl": "^0.1.0",
     "@reporters/silent": "^1.2.4",
     "@sinonjs/fake-timers": "^14.0.0",

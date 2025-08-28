@@ -1,51 +1,40 @@
 import { test } from 'node:test'
 import { once } from 'node:events'
-import { pathToFileURL } from 'node:url'
 import { fork } from 'node:child_process'
 import { tspl } from '@matteo.collina/tspl'
-import { join } from 'desm'
+import { fileURLToPath } from 'node:url'
+import { join, dirname } from 'node:path'
 
-const borp = join(import.meta.url, '..', 'borp.js')
-const clock = join(import.meta.url, '..', 'test-utils', 'clock.js')
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+const borp = join(__dirname, '..', 'borp.js')
+const longFixturePath = join(__dirname, '..', 'fixtures', 'long')
 const forkOpts = {
-  cwd: join(import.meta.url, '..', 'fixtures', 'long'),
-  env: { NODE_OPTIONS: `--import=${pathToFileURL(clock)}` },
+  cwd: longFixturePath,
   stdio: ['pipe', 'pipe', 'pipe', 'ipc']
 }
 
-// We skip Node 24 because of an incompatibility with @sinonjs/fake-timers
-// and node:test
-const isNode24 = /^v24\./.test(process.version)
-
-test('times out after 30s by default', { skip: isNode24 }, async (t) => {
+test('times out after 2s by default', async (t) => {
   const { ok, equal } = tspl(t, { plan: 4 })
-  const borpProcess = fork(borp, forkOpts)
+  const borpProcess = fork(borp, ['--timeout', '2000'], forkOpts)
   let stdout = ''
   borpProcess.stdout.on('data', (data) => {
     stdout += data
-    if (data.includes('test:waiting')) {
-      borpProcess.send(['tick', 30e3])
-      borpProcess.send(['uninstall'])
-    }
   })
   const [code] = await once(borpProcess, 'exit')
   equal(code, 1)
-  ok(stdout.includes('test timed out after 30000ms'))
+  ok(stdout.includes('test timed out after 2000ms'))
   ok(stdout.includes('tests 1'))
   ok(stdout.includes('cancelled 1'))
 })
 
-test('does not timeout when setting --no-timeout', { skip: isNode24 }, async (t) => {
+test('does not timeout when setting --no-timeout', async (t) => {
   const { ok, equal } = tspl(t, { plan: 4 })
   const borpProcess = fork(borp, ['--no-timeout'], forkOpts)
   borpProcess.stderr.pipe(process.stderr)
   let stdout = ''
   borpProcess.stdout.on('data', (data) => {
     stdout += data
-    if (data.includes('test:waiting')) {
-      borpProcess.send(['tick', 30e3])
-      borpProcess.send(['uninstall'])
-    }
   })
   const [code] = await once(borpProcess, 'exit')
   equal(code, 0)
@@ -54,20 +43,16 @@ test('does not timeout when setting --no-timeout', { skip: isNode24 }, async (t)
   ok(stdout.includes('pass 1'))
 })
 
-test('timeout is configurable', { skip: isNode24 }, async (t) => {
+test('timeout is configurable', async (t) => {
   const { ok, equal } = tspl(t, { plan: 4 })
-  const borpProcess = fork(borp, ['--timeout', '10000'], forkOpts)
+  const borpProcess = fork(borp, ['--timeout', '1000'], forkOpts)
   let stdout = ''
   borpProcess.stdout.on('data', (data) => {
     stdout += data
-    if (data.includes('test:waiting')) {
-      borpProcess.send(['tick', 10e3])
-      borpProcess.send(['uninstall'])
-    }
   })
   const [code] = await once(borpProcess, 'exit')
   equal(code, 1)
-  ok(stdout.includes('test timed out after 10000ms'))
+  ok(stdout.includes('test timed out after 1000ms'))
   ok(stdout.includes('tests 1'))
   ok(stdout.includes('cancelled 1'))
 })
