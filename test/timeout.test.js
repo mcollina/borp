@@ -13,7 +13,11 @@ const forkOpts = {
   stdio: ['pipe', 'pipe', 'pipe', 'ipc']
 }
 
-test('times out after 30s by default', async (t) => {
+// We skip Node 24 because of an incompatibility with @sinonjs/fake-timers
+// and node:test
+const isNode24 = /^v24\./.test(process.version)
+
+test('times out after 30s by default', { skip: isNode24 }, async (t) => {
   const { ok, equal } = tspl(t, { plan: 4 })
   const borpProcess = fork(borp, forkOpts)
   let stdout = ''
@@ -31,7 +35,7 @@ test('times out after 30s by default', async (t) => {
   ok(stdout.includes('cancelled 1'))
 })
 
-test('does not timeout when setting --no-timeout', async (t) => {
+test('does not timeout when setting --no-timeout', { skip: isNode24 }, async (t) => {
   const { ok, equal } = tspl(t, { plan: 4 })
   const borpProcess = fork(borp, ['--no-timeout'], forkOpts)
   borpProcess.stderr.pipe(process.stderr)
@@ -50,7 +54,7 @@ test('does not timeout when setting --no-timeout', async (t) => {
   ok(stdout.includes('pass 1'))
 })
 
-test('timeout is configurable', async (t) => {
+test('timeout is configurable', { skip: isNode24 }, async (t) => {
   const { ok, equal } = tspl(t, { plan: 4 })
   const borpProcess = fork(borp, ['--timeout', '10000'], forkOpts)
   let stdout = ''

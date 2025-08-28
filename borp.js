@@ -114,8 +114,10 @@ if (args.values.help) {
 }
 
 if (args.values['expose-gc'] && typeof global.gc !== 'function') {
+  process.env.NODE_OPTIONS = (process.env.NODE_OPTIONS ? process.env.NODE_OPTIONS + ' ' : '') + '--expose-gc'
+
   try {
-    await execa('node', ['--expose-gc', ...process.argv.slice(1)], {
+    await execa('node', [...process.argv.slice(1)], {
       stdio: 'inherit',
       env: {
         ...process.env
