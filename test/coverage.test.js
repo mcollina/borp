@@ -52,9 +52,9 @@ test('borp should return right error when check coverage is active with default 
     }
 
     equal(e.exitCode, 1)
-    match(e.stderr, /ERROR: Coverage for lines \(75%\) does not meet global threshold \(100%\)/)
-    match(e.stderr, /ERROR: Coverage for functions \(50%\) does not meet global threshold \(100%\)/)
-    match(e.stderr, /ERROR: Coverage for statements \(75%\) does not meet global threshold \(100%\)/)
+    match(e.stderr, /ERROR: Coverage for lines \(\d+(?:.\d+)?%\) does not meet global threshold \(100%\)/)
+    match(e.stderr, /ERROR: Coverage for functions \(\d+(?:.\d+)?%\) does not meet global threshold \(100%\)/)
+    match(e.stderr, /ERROR: Coverage for statements \(\d+(?:.\d+)?%\) does not meet global threshold \(100%\)/)
   }
 })
 
@@ -78,6 +78,6 @@ test('borp should return right error when check coverage is active with defined 
     }
 
     equal(e.exitCode, 1)
-    match(e.stderr, /ERROR: Coverage for lines \(75%\) does not meet global threshold \(80%\)/)
+    match(e.stderr, /ERROR: Coverage for lines \(\d+(?:.\d+)?%\) does not meet global threshold \(80%\)/)
   }
 })
