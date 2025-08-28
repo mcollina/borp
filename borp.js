@@ -114,10 +114,16 @@ if (args.values.help) {
 }
 
 if (args.values['expose-gc'] && typeof global.gc !== 'function') {
-  process.env.NODE_OPTIONS = (process.env.NODE_OPTIONS ? process.env.NODE_OPTIONS + ' ' : '') + '--expose-gc'
+  const args = [...process.argv.slice(1)]
+  const nodeVersion = process.version.split('.').map((v) => parseInt(v.replace('v', '')))[0]
+  if (nodeVersion >= 24) {
+    process.env.NODE_OPTIONS = (process.env.NODE_OPTIONS ? process.env.NODE_OPTIONS + ' ' : '') + '--expose-gc'
+  } else {
+    args.unshift('--expose-gc')
+  }
 
   try {
-    await execa('node', [...process.argv.slice(1)], {
+    await execa('node', args, {
       stdio: 'inherit',
       env: {
         ...process.env
