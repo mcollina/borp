@@ -11,7 +11,8 @@ Borp is a TypeScript-aware test runner for `node:test` with built-in code covera
 ### Primary Commands
 - `npm test` - Run complete test suite (clean, lint, and unit tests)
 - `npm run unit` - Run unit tests with coverage, excluding fixtures
-- `npm run lint` - Run standard linter with snazzy formatter
+- `npm run lint` - Run ESLint with neostandard configuration
+- `npm run lint:fix` - Run ESLint with automatic fixes
 - `npm run clean` - Remove build artifacts and test directories
 
 ### Running Individual Tests
