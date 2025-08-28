@@ -155,14 +155,14 @@ test('Post compile script should be executed when --post-compile  is sent with c
   strictEqual(stdout.indexOf('Post compile hook complete') >= 0, true, 'Post compile message should be found in stdout')
 })
 
-test('Post compile script should be executed when --post-compile  is sent with cjs', async () => {
+test('should pass --expose-gc to spawned process in execArgv', async () => {
   const { stdout } = await execa('node', [
-    '--max-old-space-size=1234',
+    '--expose-gc',
     borp,
     'exec-argv.test.js'
   ], {
     cwd: join(import.meta.url, '..', 'fixtures', 'exec-argv')
   })
 
-  strictEqual(stdout.indexOf('--max-old-space-size=1234') >= 0, true, 'execArgv should contain --max-old-space-size=4096')
+  strictEqual(stdout.indexOf('--expose-gc') !== -1, true, 'execArgv should contain --expose-gc')
 })
