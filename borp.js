@@ -113,7 +113,7 @@ if (args.values.help) {
   process.exit(0)
 }
 
-/* ci8 ignore next 20 */
+/* c8 ignore next 20 */
 if (args.values['expose-gc'] && typeof global.gc !== 'function') {
   const args = [...process.argv.slice(1)]
   const nodeVersion = process.version.split('.').map((v) => parseInt(v.replace('v', '')))[0]
