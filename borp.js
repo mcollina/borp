@@ -13,7 +13,6 @@ import githubReporter from '@reporters/github'
 import { Report } from 'c8'
 import { checkCoverages } from 'c8/lib/commands/check-coverage.js'
 import os from 'node:os'
-import { execa } from 'execa'
 import { pathToFileURL } from 'node:url'
 import loadConfig from './lib/conf.js'
 
@@ -113,27 +112,10 @@ if (args.values.help) {
   process.exit(0)
 }
 
-/* c8 ignore next 20 */
-if (args.values['expose-gc'] && typeof global.gc !== 'function') {
-  const args = [...process.argv.slice(1)]
-  const nodeVersion = process.version.split('.').map((v) => parseInt(v.replace('v', '')))[0]
-  if (nodeVersion >= 24) {
-    process.env.NODE_OPTIONS = (process.env.NODE_OPTIONS ? process.env.NODE_OPTIONS + ' ' : '') + '--expose-gc'
-  } else {
-    args.unshift('--expose-gc')
-  }
+const execArgv = []
 
-  try {
-    await execa('node', args, {
-      stdio: 'inherit',
-      env: {
-        ...process.env
-      }
-    })
-    process.exit(0)
-  } catch (error) {
-    process.exit(1)
-  }
+if (args.values['expose-gc']) {
+  execArgv.push('--expose-gc')
 }
 
 if (args.values.concurrency) {
@@ -156,6 +138,7 @@ if (args.values.coverage) {
 
 const config = {
   ...args.values,
+  execArgv,
   typescript: !args.values['no-typescript'],
   files: args.positionals,
   pattern: args.values.pattern,
