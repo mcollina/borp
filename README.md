@@ -139,16 +139,35 @@ full path to some yaml file.
 
 The current supported options are:
 
++ `coverage` (object): A hash of options relating to test coverage. By defining
+  this configuration object, coverage reporting will be enabled.
+  - `check-coverage` (boolean): Set to `true` to enable coverage checking.
+  Omit to disable coverage checking.
+  - `branches` (number): Define the percentage of acceptable coverage for
+  branches. Default: 100.
+  - `functions` (number): Define the percentage of acceptable coverage for
+  functions. Default: 100.
+  - `lines` (number): Define the percentage of acceptable coverage for
+  lines. Default: 100.
+  - `statements` (number): Define the percentage of acceptable coverage for
+  statements. Default: 100.
 + `files` (string[]): An array of test files to include. Globs are supported.
   Note: any glob that starts with a `!` (bang character) will be treated as
   an ignore glob, e.g. `'!test/**/node_modules/**/*'` will ignore all files
   in nested `node_modules` directories that would otherwise be matched.
 + `reporters` (string[]): An array of reporters to use. May be relative path
-strings, or module name strings.
+  strings, or module name strings.
 
 ### Example
 
 ```yaml
+coverage:
+  check-coverage: true
+  branches: 99
+  functions: 98
+  lines: 97
+  statements: 96
+
 files:
   - 'test/one.test.js'
   - 'test/foo/*.test.js'
