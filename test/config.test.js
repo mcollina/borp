@@ -43,3 +43,18 @@ test('interprets globs for files', async () => {
 
   strictEqual(stdout.indexOf('tests 2') >= 0, true)
 })
+
+test('adds coverage options', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
+  const { stderr } = await execa('node', [borp], {
+    cwd,
+    env: {
+      BORP_CONF_FILE: path.join(confFilesDir, 'coverage.yaml')
+    }
+  })
+
+  strictEqual(
+    stderr.includes('parsed config: --coverage --check-coverage --branches=95 --functions=90 --lines=98 --statements=80'),
+    true
+  )
+})

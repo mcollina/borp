@@ -1,0 +1,7 @@
+coverage:
+  check-coverage: true
+  branches: 95
+  functions: 90
+  lines: 98
+  statements: 80
+  foo: bar

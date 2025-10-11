@@ -58,6 +58,7 @@ Examples:
 const foundConfig = await loadConfig()
 if (foundConfig.length > 0) {
   Array.prototype.push.apply(process.argv, foundConfig)
+  process.stderr.write(`parsed config: ${foundConfig.join(' ')}\n`)
 }
 
 const optionsConfig = {
