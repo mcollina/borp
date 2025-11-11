@@ -34,7 +34,8 @@ test('watch', { skip }, async (t) => {
   }
 
   process._rawDebug('dir', dir)
-  const stream = await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  const stream = runTest()
 
   const fn = (test) => {
     if (test.type === 'test:fail') {
@@ -87,7 +88,8 @@ test('watch file syntax error', { skip }, async (t) => {
     watch: true
   }
 
-  const stream = await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  const stream = runTest()
 
   const fn = (test) => {
     if (test.type === 'test:fail') {
@@ -140,7 +142,8 @@ test('watch with post compile hook should call the hook the right number of time
     watch: true
   }
 
-  const stream = await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  const stream = runTest()
 
   const fn = (test) => {
     if (test.type === 'test:fail') {

@@ -194,7 +194,7 @@ test('executes a global teardown after the tests', async () => {
   strictEqual(stdout.split('\n').filter(m => m.includes('global teardown executed')).length === 1, true)
 })
 
-test('executes an async global teardown after the tests', { only: true }, async () => {
+test('executes an async global teardown after the tests', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'ts-global-teardown-async')
   const { stdout } = await execa('node', [
     borp,
