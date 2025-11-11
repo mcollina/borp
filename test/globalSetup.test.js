@@ -3,7 +3,7 @@ import { join } from 'desm'
 import runWithTypeScript from '../lib/run.js'
 import { strictEqual } from 'node:assert'
 
-test('load global setup (ts-cjs)', { only: true }, async () => {
+test('load global setup (ts-cjs)', async () => {
   const config = {
     files: [],
     cwd: join(import.meta.url, '..', 'fixtures', 'ts-cjs-global-setup'),
@@ -14,7 +14,7 @@ test('load global setup (ts-cjs)', { only: true }, async () => {
   strictEqual(typeof globalTeardown, 'function')
 })
 
-test('load global setup (js-esm)', { only: true }, async () => {
+test('load global setup (js-esm)', async () => {
   const config = {
     files: [],
     cwd: join(import.meta.url, '..', 'fixtures', 'js-esm-global-setup'),
@@ -25,7 +25,7 @@ test('load global setup (js-esm)', { only: true }, async () => {
   strictEqual(typeof globalTeardown, 'function')
 })
 
-test('load global setup (js-cjs)', async (t) => {
+test('load global setup (js-cjs)', async () => {
   const config = {
     files: [],
     cwd: join(import.meta.url, '..', 'fixtures', 'js-cjs-global-setup'),
