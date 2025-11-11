@@ -180,3 +180,29 @@ test('executes an async global setup', async () => {
 
   strictEqual(stdout.split('\n').filter(m => m.includes('global setup executed')).length === 1, true)
 })
+
+test('executes a global teardown after the tests', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-global-teardown')
+  const { stdout } = await execa('node', [
+    borp,
+    '--global-setup=./test/global-setup.ts',
+    '\'**/*.test.ts\'',
+  ], {
+    cwd
+  })
+
+  strictEqual(stdout.split('\n').filter(m => m.includes('global teardown executed')).length === 1, true)
+})
+
+test('executes an async global teardown after the tests', { only: true }, async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-global-teardown-async')
+  const { stdout } = await execa('node', [
+    borp,
+    '--global-setup=./test/global-setup.ts',
+    '\'**/*.test.ts\'',
+  ], {
+    cwd
+  })
+
+  strictEqual(stdout.split('\n').filter(m => m.includes('global teardown executed')).length === 1, true)
+})
