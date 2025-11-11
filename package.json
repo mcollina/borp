@@ -16,6 +16,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "unit": "node borp.js --ignore \"fixtures/**/*\" -C --coverage-exclude \"fixtures/**/*\" --coverage-exclude \"test*/**/*\"",
+    "unit:only": "node borp.js --only --ignore \"fixtures/**/*\" -C --coverage-exclude \"fixtures/**/*\" --coverage-exclude \"test*/**/*\"",
     "test": "npm run clean ; npm run lint && npm run unit"
   },
   "keywords": [],

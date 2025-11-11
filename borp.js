@@ -85,7 +85,8 @@ const optionsConfig = {
   lines: { type: 'string', default: '100' },
   branches: { type: 'string', default: '100' },
   functions: { type: 'string', default: '100' },
-  statements: { type: 'string', default: '100' }
+  statements: { type: 'string', default: '100' },
+  'global-setup': { type: 'string' }
 }
 
 let args
