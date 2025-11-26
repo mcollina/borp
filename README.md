@@ -1,7 +1,7 @@
 # borp
 
 Borp is a typescript-aware test runner for `node:test`.
-It also support code coverage via [c8](http://npm.im/c8).
+It also support code coverage via [c8](https://npm.im/c8).
 
 Borp is self-hosted, i.e. Borp runs its own tests.
 
