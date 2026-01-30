@@ -2,6 +2,8 @@ import { test } from 'node:test'
 import { match, doesNotMatch, fail, equal, AssertionError } from 'node:assert'
 import { execa } from 'execa'
 import { join } from 'desm'
+import { mkdtemp, rm, cp, access } from 'node:fs/promises'
+import path from 'node:path'
 
 delete process.env.GITHUB_ACTION
 const borp = join(import.meta.url, '..', 'borp.js')
@@ -17,6 +19,29 @@ test('coverage', async () => {
   match(res.stdout, /% Stmts/)
   match(res.stdout, /All files/)
   match(res.stdout, /add\.ts/)
+})
+
+test('coverage supports html reporter', async () => {
+  const repoRoot = path.dirname(borp)
+  const tmpDir = await mkdtemp(path.join(repoRoot, '.test-coverage-html-'))
+  const fixtureDir = join(import.meta.url, '..', 'fixtures', 'ts-esm')
+  const cwd = path.join(tmpDir, 'project')
+
+  try {
+    await cp(fixtureDir, cwd, { recursive: true })
+    const res = await execa('node', [
+      borp,
+      '--coverage',
+      '--coverage-html'
+    ], {
+      cwd
+    })
+
+    match(res.stdout, /% Stmts/)
+    await access(path.join(cwd, 'coverage', 'index.html'))
+  } finally {
+    await rm(tmpDir, { recursive: true, force: true })
+  }
 })
 
 test('coverage excludes', async () => {

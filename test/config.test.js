@@ -58,3 +58,16 @@ test('adds coverage options', async () => {
     true
   )
 })
+
+test('adds coverage html', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
+  const { stderr } = await execa('node', [borp], {
+    cwd,
+    env: {
+      BORP_CONF_FILE: path.join(confFilesDir, 'cov-html.yaml')
+    }
+  })
+
+  strictEqual(stderr.includes('--coverage'), true)
+  strictEqual(stderr.includes('--coverage-html'), true)
+})
