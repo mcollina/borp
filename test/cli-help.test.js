@@ -23,6 +23,7 @@ test('invalid option shows help text', { skip: isWindows }, async () => {
     strictEqual(error.stderr.includes('Usage: borp [options] [files...]'), true, 'Should show usage line')
     strictEqual(error.stderr.includes('--help'), true, 'Should show help option')
     strictEqual(error.stderr.includes('--coverage'), true, 'Should show coverage option')
+    strictEqual(error.stderr.includes('--coverage-html'), true, 'Should show html option')
     strictEqual(error.stderr.includes('Examples:'), true, 'Should show examples section')
     return true
   })
@@ -74,6 +75,7 @@ test('--help option shows help text and exits successfully', { skip: isWindows }
   strictEqual(stdout.includes('Usage: borp [options] [files...]'), true, 'Should show usage line')
   strictEqual(stdout.includes('--help'), true, 'Should show help option')
   strictEqual(stdout.includes('--coverage'), true, 'Should show coverage option')
+  strictEqual(stdout.includes('--coverage-html'), true, 'Should show html option')
   strictEqual(stdout.includes('Examples:'), true, 'Should show examples section')
   strictEqual(stdout.includes('borp --coverage'), true, 'Should show coverage example')
 })

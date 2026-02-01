@@ -42,6 +42,7 @@ Options:
   -P, --post-compile <file>   Execute file after TypeScript compilation
   -r, --reporter <name>       Set reporter (can be used multiple times, default: spec)
       --check-coverage        Enable coverage threshold checking
+      --coverage-html         Generate HTML coverage report
       --lines <threshold>     Set lines coverage threshold (default: 100)
       --branches <threshold>  Set branches coverage threshold (default: 100)
       --functions <threshold> Set functions coverage threshold (default: 100)
@@ -82,6 +83,7 @@ const optionsConfig = {
     multiple: true
   },
   'check-coverage': { type: 'boolean' },
+  'coverage-html': { type: 'boolean' },
   lines: { type: 'string', default: '100' },
   branches: { type: 'string', default: '100' },
   functions: { type: 'string', default: '100' },
@@ -225,11 +227,23 @@ try {
       exclude = exclude.map((file) => posix.join(localPrefix, file))
     }
     const nycrc = await findUp(['.c8rc', '.c8rc.json', '.nycrc', '.nycrc.json'], { cwd: config.cwd })
+    const nycrcConfig = nycrc ? JSON.parse(await readFile(nycrc, 'utf8')) : {}
+    const configuredReporters = Array.isArray(nycrcConfig.reporter)
+      ? nycrcConfig.reporter
+      : typeof nycrcConfig.reporter === 'string' && nycrcConfig.reporter.length > 0
+        ? [nycrcConfig.reporter]
+        : ['text']
+
+    const coverageReporters = args.values['coverage-html']
+      ? Array.from(new Set([...configuredReporters, 'html']))
+      : configuredReporters
+
+    delete nycrcConfig.reporter
     const report = Report({
-      reporter: ['text'],
+      reporter: coverageReporters,
       tempDirectory: covDir,
       exclude,
-      ...nycrc && JSON.parse(await readFile(nycrc, 'utf8'))
+      ...nycrcConfig
     })
 
     if (args.values['check-coverage']) {
