@@ -67,7 +67,8 @@ test('addSuccess', () => {
     watch: true
   }
 
-  await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  runTest()
 
   const failureTestToWrite = `
 import { test } from 'node:test'

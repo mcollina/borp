@@ -11,7 +11,8 @@ test('ts-esm', async (t) => {
     cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
   }
 
-  const stream = await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  const stream = runTest()
 
   const names = new Set(['add', 'add2'])
 
@@ -35,7 +36,8 @@ test('ts-cjs', async (t) => {
     cwd: join(import.meta.url, '..', 'fixtures', 'ts-cjs')
   }
 
-  const stream = await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  const stream = runTest()
 
   const names = new Set(['add', 'add2'])
 
@@ -54,7 +56,8 @@ test('ts-esm with named files', async (t) => {
     cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
   }
 
-  const stream = await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  const stream = runTest()
 
   const names = new Set(['add'])
 
@@ -79,7 +82,8 @@ test('pattern', async (t) => {
     cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
   }
 
-  const stream = await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  const stream = runTest()
 
   const names = new Set(['add2'])
 
@@ -102,7 +106,8 @@ test('no files', async (t) => {
     cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
   }
 
-  const stream = await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  const stream = runTest()
 
   const names = new Set(['add', 'add2'])
 
@@ -126,7 +131,8 @@ test('src-to-dist', async (t) => {
     cwd: join(import.meta.url, '..', 'fixtures', 'src-to-dist')
   }
 
-  const stream = await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  const stream = runTest()
 
   const names = new Set(['add', 'add2'])
 
@@ -150,7 +156,8 @@ test('monorepo', async (t) => {
   }
 
   await execa('npm', ['install'], { cwd: join(import.meta.url, '..', 'fixtures', 'monorepo') })
-  const stream = await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  const stream = runTest()
 
   const names = new Set(['package2-add', 'package2-add2'])
 
@@ -174,7 +181,8 @@ test('only-src', async (t) => {
     cwd: join(import.meta.url, '..', 'fixtures', 'only-src')
   }
 
-  const stream = await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  const stream = runTest()
 
   const names = new Set(['add', 'add2'])
 
@@ -198,7 +206,8 @@ test('js-esm', async (t) => {
     cwd: join(import.meta.url, '..', 'fixtures', 'js-esm')
   }
 
-  const stream = await runWithTypeScript(config)
+  const { runTest } = await runWithTypeScript(config)
+  const stream = runTest()
 
   const names = new Set(['add', 'add2'])
 

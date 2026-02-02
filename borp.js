@@ -87,7 +87,8 @@ const optionsConfig = {
   lines: { type: 'string', default: '100' },
   branches: { type: 'string', default: '100' },
   functions: { type: 'string', default: '100' },
-  statements: { type: 'string', default: '100' }
+  statements: { type: 'string', default: '100' },
+  'global-setup': { type: 'string' }
 }
 
 let args
@@ -207,7 +208,13 @@ try {
     pipes.push([reporter, output])
   }
 
-  const stream = await runWithTypeScript(config)
+  const { runTest, globalTeardown, globalSetup } = await runWithTypeScript(config)
+
+  if (globalSetup) {
+    await globalSetup()
+  }
+
+  const stream = runTest()
 
   stream.on('test:fail', () => {
     process.exitCode = 1
@@ -218,6 +225,10 @@ try {
   }
 
   await finished(stream)
+
+  if (globalTeardown) {
+    await globalTeardown()
+  }
 
   if (covDir) {
     let exclude = args.values['coverage-exclude']

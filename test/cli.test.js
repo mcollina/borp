@@ -154,3 +154,55 @@ test('Post compile script should be executed when --post-compile  is sent with c
 
   strictEqual(stdout.indexOf('Post compile hook complete') >= 0, true, 'Post compile message should be found in stdout')
 })
+
+test('executes a global setup once for all the tests', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-global-setup')
+  const { stdout } = await execa('node', [
+    borp,
+    '--global-setup=./test/global-setup.ts',
+    '\'**/*.test.ts\'',
+  ], {
+    cwd
+  })
+
+  strictEqual(stdout.split('\n').filter(m => m.includes('global setup executed')).length === 1, true)
+})
+
+test('executes an async global setup', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-global-setup-async')
+  const { stdout } = await execa('node', [
+    borp,
+    '--global-setup=./test/global-setup.ts',
+    '\'**/*.test.ts\'',
+  ], {
+    cwd
+  })
+
+  strictEqual(stdout.split('\n').filter(m => m.includes('global setup executed')).length === 1, true)
+})
+
+test('executes a global teardown after the tests', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-global-teardown')
+  const { stdout } = await execa('node', [
+    borp,
+    '--global-setup=./test/global-setup.ts',
+    '\'**/*.test.ts\'',
+  ], {
+    cwd
+  })
+
+  strictEqual(stdout.split('\n').filter(m => m.includes('global teardown executed')).length === 1, true)
+})
+
+test('executes an async global teardown after the tests', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-global-teardown-async')
+  const { stdout } = await execa('node', [
+    borp,
+    '--global-setup=./test/global-setup.ts',
+    '\'**/*.test.ts\'',
+  ], {
+    cwd
+  })
+
+  strictEqual(stdout.split('\n').filter(m => m.includes('global teardown executed')).length === 1, true)
+})
