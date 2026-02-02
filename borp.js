@@ -6,8 +6,7 @@ import { findUp } from 'find-up'
 import { mkdtemp, rm, readFile } from 'node:fs/promises'
 import { createWriteStream } from 'node:fs'
 import { finished } from 'node:stream/promises'
-import { join, relative, resolve } from 'node:path'
-import posix from 'node:path/posix'
+import { join, resolve } from 'node:path'
 import runWithTypeScript from './lib/run.js'
 import githubReporter from '@reporters/github'
 import { Report } from 'c8'
@@ -38,8 +37,6 @@ Options:
   -X, --coverage-exclude      Exclude patterns from coverage (can be used multiple times)
   -i, --ignore <pattern>      Ignore glob pattern (can be used multiple times)
       --expose-gc             Expose the gc() function to tests
-  -T, --no-typescript         Disable automatic TypeScript compilation
-  -P, --post-compile <file>   Execute file after TypeScript compilation
   -r, --reporter <name>       Set reporter (can be used multiple times, default: spec)
       --check-coverage        Enable coverage threshold checking
       --coverage-html         Generate HTML coverage report
@@ -74,8 +71,6 @@ const optionsConfig = {
   ignore: { type: 'string', short: 'i', multiple: true },
   'expose-gc': { type: 'boolean' },
   help: { type: 'boolean', short: 'h' },
-  'no-typescript': { type: 'boolean', short: 'T' },
-  'post-compile': { type: 'string', short: 'P' },
   reporter: {
     type: 'string',
     short: 'r',
@@ -159,7 +154,6 @@ if (args.values.coverage) {
 
 const config = {
   ...args.values,
-  typescript: !args.values['no-typescript'],
   files: args.positionals,
   pattern: args.values.pattern,
   cwd: process.cwd()
@@ -220,12 +214,7 @@ try {
   await finished(stream)
 
   if (covDir) {
-    let exclude = args.values['coverage-exclude']
-
-    if (exclude && config.prefix) {
-      const localPrefix = relative(process.cwd(), config.prefix)
-      exclude = exclude.map((file) => posix.join(localPrefix, file))
-    }
+    const exclude = args.values['coverage-exclude']
     const nycrc = await findUp(['.c8rc', '.c8rc.json', '.nycrc', '.nycrc.json'], { cwd: config.cwd })
     const nycrcConfig = nycrc ? JSON.parse(await readFile(nycrc, 'utf8')) : {}
     const configuredReporters = Array.isArray(nycrcConfig.reporter)

@@ -1,5 +1,5 @@
 import { test } from 'node:test'
-import { add } from '../src/math.js'
+import { add } from '../src/math.ts'
 import { strictEqual } from 'node:assert'
 
 test('add', () => {
