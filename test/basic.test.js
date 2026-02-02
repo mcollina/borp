@@ -1,16 +1,21 @@
 import { test } from 'node:test'
-import { tspl } from '@matteo.collina/tspl'
-import runWithTypeScript from '../lib/run.js'
-import { join } from 'desm'
+import { strictEqual } from 'node:assert'
+import { run } from 'node:test'
+import { glob } from 'glob'
+import { join } from 'node:path'
 
-test('ts-esm', async (t) => {
-  const { strictEqual, completed } = tspl(t, { plan: 2 })
-  const config = {
-    files: [],
-    cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
+async function consumeStream (stream) {
+  // eslint-disable-next-line no-unused-vars
+  for await (const _ of stream) {
+    // Stream must be consumed for tests to complete properly
   }
+}
 
-  const stream = await runWithTypeScript(config)
+test('ts-esm', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
+  const files = await glob('**/*.test.ts', { cwd, absolute: true })
+
+  const stream = run({ files, cwd })
 
   const names = new Set(['add', 'add2'])
 
@@ -19,17 +24,14 @@ test('ts-esm', async (t) => {
     names.delete(test.name)
   })
 
-  await completed
+  await consumeStream(stream)
 })
 
-test('ts-esm with named files', async (t) => {
-  const { strictEqual, completed } = tspl(t, { plan: 1 })
-  const config = {
-    files: ['test/add.test.ts'],
-    cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
-  }
+test('ts-esm with named files', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
+  const files = [join(cwd, 'test/add.test.ts')]
 
-  const stream = await runWithTypeScript(config)
+  const stream = run({ files, cwd })
 
   const names = new Set(['add'])
 
@@ -38,18 +40,14 @@ test('ts-esm with named files', async (t) => {
     names.delete(test.name)
   })
 
-  await completed
+  await consumeStream(stream)
 })
 
-test('pattern', async (t) => {
-  const { strictEqual, completed } = tspl(t, { plan: 1 })
-  const config = {
-    files: [],
-    pattern: 'test/*2.test.ts',
-    cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
-  }
+test('pattern', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
+  const files = await glob('test/*2.test.ts', { cwd, absolute: true })
 
-  const stream = await runWithTypeScript(config)
+  const stream = run({ files, cwd })
 
   const names = new Set(['add2'])
 
@@ -58,16 +56,14 @@ test('pattern', async (t) => {
     names.delete(test.name)
   })
 
-  await completed
+  await consumeStream(stream)
 })
 
-test('no files', async (t) => {
-  const { strictEqual, completed } = tspl(t, { plan: 2 })
-  const config = {
-    cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm')
-  }
+test('no files', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
+  const files = await glob('**/*.test.ts', { cwd, absolute: true })
 
-  const stream = await runWithTypeScript(config)
+  const stream = run({ files, cwd })
 
   const names = new Set(['add', 'add2'])
 
@@ -76,17 +72,14 @@ test('no files', async (t) => {
     names.delete(test.name)
   })
 
-  await completed
+  await consumeStream(stream)
 })
 
-test('ts-esm2', async (t) => {
-  const { strictEqual, completed } = tspl(t, { plan: 2 })
-  const config = {
-    files: [],
-    cwd: join(import.meta.url, '..', 'fixtures', 'ts-esm2')
-  }
+test('ts-esm2', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm2')
+  const files = await glob('**/*.test.ts', { cwd, absolute: true })
 
-  const stream = await runWithTypeScript(config)
+  const stream = run({ files, cwd })
 
   const names = new Set(['add', 'add2'])
 
@@ -95,17 +88,14 @@ test('ts-esm2', async (t) => {
     names.delete(test.name)
   })
 
-  await completed
+  await consumeStream(stream)
 })
 
-test('js-esm', async (t) => {
-  const { strictEqual, completed } = tspl(t, { plan: 2 })
-  const config = {
-    files: [],
-    cwd: join(import.meta.url, '..', 'fixtures', 'js-esm')
-  }
+test('js-esm', async () => {
+  const cwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
+  const files = await glob('**/*.test.js', { cwd, absolute: true })
 
-  const stream = await runWithTypeScript(config)
+  const stream = run({ files, cwd })
 
   const names = new Set(['add', 'add2'])
 
@@ -114,7 +104,5 @@ test('js-esm', async (t) => {
     names.delete(test.name)
   })
 
-  stream.resume()
-
-  await completed
+  await consumeStream(stream)
 })

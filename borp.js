@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 
 import { parseArgs } from 'node:util'
+import runTests from './lib/run.js'
 import Reporters from 'node:test/reporters'
 import { findUp } from 'find-up'
 import { mkdtemp, rm, readFile } from 'node:fs/promises'
 import { createWriteStream } from 'node:fs'
 import { finished } from 'node:stream/promises'
 import { join, resolve } from 'node:path'
-import runWithTypeScript from './lib/run.js'
 import githubReporter from '@reporters/github'
 import { Report } from 'c8'
 import { checkCoverages } from 'c8/lib/commands/check-coverage.js'
@@ -15,6 +15,10 @@ import os from 'node:os'
 import { execa } from 'execa'
 import { pathToFileURL } from 'node:url'
 import loadConfig from './lib/conf.js'
+
+// This is a hack to override
+// https://github.com/nodejs/node/commit/d5c9adf3df
+delete process.env.NODE_TEST_CONTEXT
 
 /* c8 ignore next 4 */
 process.on('unhandledRejection', (err) => {
@@ -56,7 +60,8 @@ Examples:
 const foundConfig = await loadConfig()
 if (foundConfig.length > 0) {
   Array.prototype.push.apply(process.argv, foundConfig)
-  process.stderr.write(`parsed config: ${foundConfig.join(' ')}\n`)
+  process.stderr.write(`parsed config: ${foundConfig.join(' ')}
+`)
 }
 
 const optionsConfig = {
@@ -113,16 +118,16 @@ if (args.values.help) {
 
 /* c8 ignore next 20 */
 if (args.values['expose-gc'] && typeof global.gc !== 'function') {
-  const args = [...process.argv.slice(1)]
+  const spawnArgs = [...process.argv.slice(1)]
   const nodeVersion = process.version.split('.').map((v) => parseInt(v.replace('v', '')))[0]
   if (nodeVersion >= 24) {
     process.env.NODE_OPTIONS = (process.env.NODE_OPTIONS ? process.env.NODE_OPTIONS + ' ' : '') + '--expose-gc'
   } else {
-    args.unshift('--expose-gc')
+    spawnArgs.unshift('--expose-gc')
   }
 
   try {
-    await execa('node', args, {
+    await execa('node', spawnArgs, {
       stdio: 'inherit',
       env: {
         ...process.env
@@ -150,13 +155,6 @@ let covDir
 if (args.values.coverage) {
   covDir = await mkdtemp(join(os.tmpdir(), 'coverage-'))
   process.env.NODE_V8_COVERAGE = covDir
-}
-
-const config = {
-  ...args.values,
-  files: args.positionals,
-  pattern: args.values.pattern,
-  cwd: process.cwd()
 }
 
 try {
@@ -201,7 +199,14 @@ try {
     pipes.push([reporter, output])
   }
 
-  const stream = await runWithTypeScript(config)
+  const config = {
+    ...args.values,
+    files: args.positionals,
+    pattern: args.values.pattern,
+    cwd: process.cwd()
+  }
+
+  const stream = await runTests(config)
 
   stream.on('test:fail', () => {
     process.exitCode = 1
