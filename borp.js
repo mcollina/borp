@@ -1,14 +1,13 @@
 #! /usr/bin/env node
 
 import { parseArgs } from 'node:util'
+import runTests from './lib/run.js'
 import Reporters from 'node:test/reporters'
 import { findUp } from 'find-up'
 import { mkdtemp, rm, readFile } from 'node:fs/promises'
 import { createWriteStream } from 'node:fs'
 import { finished } from 'node:stream/promises'
-import { join, relative, resolve } from 'node:path'
-import posix from 'node:path/posix'
-import runWithTypeScript from './lib/run.js'
+import { join, resolve } from 'node:path'
 import githubReporter from '@reporters/github'
 import { Report } from 'c8'
 import { checkCoverages } from 'c8/lib/commands/check-coverage.js'
@@ -16,6 +15,10 @@ import os from 'node:os'
 import { execa } from 'execa'
 import { pathToFileURL } from 'node:url'
 import loadConfig from './lib/conf.js'
+
+// This is a hack to override
+// https://github.com/nodejs/node/commit/d5c9adf3df
+delete process.env.NODE_TEST_CONTEXT
 
 /* c8 ignore next 4 */
 process.on('unhandledRejection', (err) => {
@@ -38,8 +41,6 @@ Options:
   -X, --coverage-exclude      Exclude patterns from coverage (can be used multiple times)
   -i, --ignore <pattern>      Ignore glob pattern (can be used multiple times)
       --expose-gc             Expose the gc() function to tests
-  -T, --no-typescript         Disable automatic TypeScript compilation
-  -P, --post-compile <file>   Execute file after TypeScript compilation
   -r, --reporter <name>       Set reporter (can be used multiple times, default: spec)
       --check-coverage        Enable coverage threshold checking
       --coverage-html         Generate HTML coverage report
@@ -74,8 +75,6 @@ const optionsConfig = {
   ignore: { type: 'string', short: 'i', multiple: true },
   'expose-gc': { type: 'boolean' },
   help: { type: 'boolean', short: 'h' },
-  'no-typescript': { type: 'boolean', short: 'T' },
-  'post-compile': { type: 'string', short: 'P' },
   reporter: {
     type: 'string',
     short: 'r',
@@ -118,16 +117,16 @@ if (args.values.help) {
 
 /* c8 ignore next 20 */
 if (args.values['expose-gc'] && typeof global.gc !== 'function') {
-  const args = [...process.argv.slice(1)]
+  const spawnArgs = [...process.argv.slice(1)]
   const nodeVersion = process.version.split('.').map((v) => parseInt(v.replace('v', '')))[0]
   if (nodeVersion >= 24) {
     process.env.NODE_OPTIONS = (process.env.NODE_OPTIONS ? process.env.NODE_OPTIONS + ' ' : '') + '--expose-gc'
   } else {
-    args.unshift('--expose-gc')
+    spawnArgs.unshift('--expose-gc')
   }
 
   try {
-    await execa('node', args, {
+    await execa('node', spawnArgs, {
       stdio: 'inherit',
       env: {
         ...process.env
@@ -155,14 +154,6 @@ let covDir
 if (args.values.coverage) {
   covDir = await mkdtemp(join(os.tmpdir(), 'coverage-'))
   process.env.NODE_V8_COVERAGE = covDir
-}
-
-const config = {
-  ...args.values,
-  typescript: !args.values['no-typescript'],
-  files: args.positionals,
-  pattern: args.values.pattern,
-  cwd: process.cwd()
 }
 
 try {
@@ -207,7 +198,14 @@ try {
     pipes.push([reporter, output])
   }
 
-  const stream = await runWithTypeScript(config)
+  const config = {
+    ...args.values,
+    files: args.positionals,
+    pattern: args.values.pattern,
+    cwd: process.cwd()
+  }
+
+  const stream = await runTests(config)
 
   stream.on('test:fail', () => {
     process.exitCode = 1
@@ -220,12 +218,7 @@ try {
   await finished(stream)
 
   if (covDir) {
-    let exclude = args.values['coverage-exclude']
-
-    if (exclude && config.prefix) {
-      const localPrefix = relative(process.cwd(), config.prefix)
-      exclude = exclude.map((file) => posix.join(localPrefix, file))
-    }
+    const exclude = args.values['coverage-exclude']
     const nycrc = await findUp(['.c8rc', '.c8rc.json', '.nycrc', '.nycrc.json'], { cwd: config.cwd })
     const nycrcConfig = nycrc ? JSON.parse(await readFile(nycrc, 'utf8')) : {}
     const configuredReporters = Array.isArray(nycrcConfig.reporter)

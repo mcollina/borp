@@ -136,3 +136,9 @@ coverage-*
 
 # Jetbrains ide config
 .idea
+
+# pi coding agent
+.pi
+
+# githuman
+.githuman

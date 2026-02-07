@@ -2,7 +2,7 @@
   "name": "borp",
   "version": "0.22.0",
   "type": "module",
-  "description": "node:test wrapper with TypeScript support",
+  "description": "node:test wrapper with TypeScript support via type stripping",
   "main": "borp.js",
   "bin": {
     "borp": "borp.js"
@@ -10,6 +10,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/mcollina/borp"
+  },
+  "engines": {
+    "node": ">=22.6.0"
   },
   "scripts": {
     "clean": "rm -rf fixtures/*/dist .test-*",
