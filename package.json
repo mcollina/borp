@@ -31,7 +31,7 @@
     "@fastify/pre-commit": "^2.2.0",
     "@matteo.collina/tspl": "^0.1.0",
     "@reporters/silent": "^1.2.4",
-    "@sinonjs/fake-timers": "^14.0.0",
+    "@sinonjs/fake-timers": "^15.0.0",
     "@types/node": "^24.0.14",
     "desm": "^1.3.0",
     "semver": "^7.6.3",
