@@ -1,6 +1,6 @@
 # borp
 
-Borp is a TypeScript-aware test runner for `node:test` with built-in code coverage support via [c8](https://npm.im/c8).
+Borp is a TypeScript-aware test runner for `node:test` with built-in code coverage support via [@matteocollina/c8](https://github.com/mcollina/matteocollina-c8).
 
 Borp uses Node.js native [type stripping](https://nodejs.org/api/typescript.html) to run TypeScript files directly without compilation. No build step required!
 
@@ -8,7 +8,7 @@ Borp is self-hosted, i.e. Borp runs its own tests.
 
 ## Requirements
 
-- Node.js >= 22.6.0 (22.19.0+ or 24.x+ recommended for best TypeScript support)
+- Node.js >= 22.6.0 (22.19.0+ or 24.x+ recommended for best TypeScript support; 26.x supported)
 
 ## Install
 
