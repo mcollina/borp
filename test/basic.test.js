@@ -4,6 +4,21 @@ import { run } from 'node:test'
 import { glob } from 'glob'
 import { join } from 'node:path'
 
+// node:test's run() refuses to spawn files when NODE_TEST_CONTEXT is set
+// (https://github.com/nodejs/node/commit/d5c9adf3df). We're inside such a
+// child here, so unset it just for the call. Doing it at module scope would
+// also fool lazyBootstrapRoot into installing a spec reporter on stdout,
+// corrupting the v8-serialized stream our parent (borp) is reading.
+function runIsolated (opts) {
+  const saved = process.env.NODE_TEST_CONTEXT
+  delete process.env.NODE_TEST_CONTEXT
+  try {
+    return run(opts)
+  } finally {
+    if (saved !== undefined) process.env.NODE_TEST_CONTEXT = saved
+  }
+}
+
 async function consumeStream (stream) {
   // eslint-disable-next-line no-unused-vars
   for await (const _ of stream) {
@@ -15,7 +30,7 @@ test('ts-esm', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
   const files = await glob('**/*.test.ts', { cwd, absolute: true })
 
-  const stream = run({ files, cwd })
+  const stream = runIsolated({ files, cwd })
 
   const names = new Set(['add', 'add2'])
 
@@ -31,7 +46,7 @@ test('ts-esm with named files', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
   const files = [join(cwd, 'test/add.test.ts')]
 
-  const stream = run({ files, cwd })
+  const stream = runIsolated({ files, cwd })
 
   const names = new Set(['add'])
 
@@ -47,7 +62,7 @@ test('pattern', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
   const files = await glob('test/*2.test.ts', { cwd, absolute: true })
 
-  const stream = run({ files, cwd })
+  const stream = runIsolated({ files, cwd })
 
   const names = new Set(['add2'])
 
@@ -63,7 +78,7 @@ test('no files', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm')
   const files = await glob('**/*.test.ts', { cwd, absolute: true })
 
-  const stream = run({ files, cwd })
+  const stream = runIsolated({ files, cwd })
 
   const names = new Set(['add', 'add2'])
 
@@ -79,7 +94,7 @@ test('ts-esm2', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'ts-esm2')
   const files = await glob('**/*.test.ts', { cwd, absolute: true })
 
-  const stream = run({ files, cwd })
+  const stream = runIsolated({ files, cwd })
 
   const names = new Set(['add', 'add2'])
 
@@ -95,7 +110,7 @@ test('js-esm', async () => {
   const cwd = join(import.meta.url, '..', 'fixtures', 'js-esm')
   const files = await glob('**/*.test.js', { cwd, absolute: true })
 
-  const stream = run({ files, cwd })
+  const stream = runIsolated({ files, cwd })
 
   const names = new Set(['add', 'add2'])
 
