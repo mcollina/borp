@@ -1,6 +1,5 @@
-import { test } from 'node:test'
+import { test, run } from 'node:test'
 import { strictEqual } from 'node:assert'
-import { run } from 'node:test'
 import { glob } from 'glob'
 import { join } from 'node:path'
 
