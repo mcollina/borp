@@ -37,7 +37,7 @@
     "semver": "^7.6.3",
     "eslint": "^9.9.1",
     "neostandard": "^0.12.2",
-    "typescript": "^5.3.2"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "@reporters/github": "^1.5.4",
