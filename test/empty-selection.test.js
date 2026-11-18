@@ -12,6 +12,7 @@ const cases = [
   { name: 'default discovery', args: [], selected: true },
   { name: 'matching pattern', args: ['--pattern', '*.test.cjs'], selected: true },
   { name: 'unmatched pattern', args: ['--pattern', 'missing/*.test.cjs'] },
+  { name: 'pattern with literal single quotes', args: ['--pattern', "'*.test.cjs'"] },
   { name: 'unmatched positional glob', args: ['missing/*.test.cjs'] },
   { name: 'ignore all tests', args: ['--ignore', '**/*.test.cjs'] },
   { name: 'positive and negative globs', args: ['*.test.cjs', '!*.test.cjs'] },
